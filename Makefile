@@ -30,7 +30,7 @@ build:
 ## dockerize: create agent docker image 
 .PHONY: dockerize
 dockerize:
-	@docker build -f Dockerfile -t "$(DOCKER_TAG)" .
+	@docker build --build-arg GITHUB_USER --build-arg GITHUB_TOKEN -f Dockerfile -t "$(DOCKER_TAG)" .
 
 ## run: run docker image 
 .PHONY: run

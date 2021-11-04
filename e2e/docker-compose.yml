@@ -7,6 +7,8 @@ services:
       
   prometheus:
     image: prom/prometheus
+    depends_on:
+      - agent
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
@@ -23,3 +25,17 @@ services:
       - prometheus
     ports:
       - 3000:3000
+      
+  agent:
+    build:
+      dockerfile: Dockerfile
+      context: ..
+      args:
+        - GITHUB_USER
+        - GITHUB_TOKEN
+    env_file:
+      - ./env
+    environment:
+      - LEGALI_CLIENT_SECRET  
+    ports:
+      - 8085:8085

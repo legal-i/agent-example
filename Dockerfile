@@ -1,5 +1,12 @@
 ### BUILD image
 FROM eclipse-temurin:11-focal AS builder
+
+ARG GITHUB_USER
+ENV GITHUB_USER $GITHUB_USER
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN $GITHUB_TOKEN
+
+COPY settings.xml /root/.m2/
 WORKDIR /app
 
 COPY mvnw .
