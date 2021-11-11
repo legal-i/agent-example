@@ -22,10 +22,7 @@ public class ExampleRemoteEventService {
     this.eventClient = eventClient;
   }
 
-  /**
-   * On connector start, ping the API to request an asynchronous pong event
-   *
-   */
+  /** On connector start, ping the API to request an asynchronous pong event */
   @EventListener
   public void onStartConnectorEvent(
       @SuppressWarnings("unused") HealthService.StartConnectorEvent event) {

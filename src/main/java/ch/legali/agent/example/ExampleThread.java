@@ -6,27 +6,26 @@ import ch.legali.agent.sdk.models.LegalCaseDTO;
 import ch.legali.agent.sdk.models.SourceFileDTO;
 import ch.legali.agent.sdk.services.LegalCaseService;
 import ch.legali.agent.sdk.services.SourceFileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 @Component
-public class ExampleConnector implements Runnable {
+public class ExampleThread implements Runnable {
 
-  private static final Logger log = LoggerFactory.getLogger(ExampleConnector.class);
+  private static final Logger log = LoggerFactory.getLogger(ExampleThread.class);
 
   private final LegalCaseService legalCaseService;
   private final SourceFileService sourceFileService;
   private final ExampleConfig exampleConfig;
 
-  public ExampleConnector(
+  public ExampleThread(
       LegalCaseService legalCaseService,
       SourceFileService sourceFileService,
       ExampleConfig exampleConfig) {
@@ -39,17 +38,15 @@ public class ExampleConnector implements Runnable {
   public void run() {
     int i = 0;
     while (i++ < this.exampleConfig.getIterations()) {
-      log.info("Starting run {}", i);
+      log.info("🚀  Starting run {}", i);
       this.runExample();
     }
   }
 
-  /**
-   * SEE HERE! Contains the connectors logic
-   */
+  /** SEE HERE! Contains the connectors logic */
   private void runExample() {
     // Create
-    log.info("🗂 Adding LegalCase");
+    log.info("🗂  Adding LegalCase");
     LegalCaseDTO legalCase =
         LegalCaseDTO.builder()
             .legalCaseUUID(UUID.randomUUID())
@@ -66,11 +63,11 @@ public class ExampleConnector implements Runnable {
     try {
       this.legalCaseService.create(legalCase);
     } catch (AlreadyExistsException alreadyExistsException) {
-      log.info("🙅‍ Already exists, refused to do it again!‍️");
+      log.info("🙅‍  Already exists, refused to do it again!‍️");
     }
 
     // update legal case
-    log.info("🤓 Updating LegalCase");
+    log.info("🤓  Updating LegalCase");
     LegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.getLegalCaseUUID());
     LegalCaseDTO nameChanged =
         LegalCaseDTO.builder()
@@ -91,10 +88,10 @@ public class ExampleConnector implements Runnable {
             .putMetadata("hello", "world")
             .build();
 
-    log.info("🧾 Creating SourceFile");
+    log.info("🧾  Creating SourceFile");
     this.sourceFileService.create(sourceFile, fileToUpload);
 
-    log.info("😴 Waiting for SourceFile to be processed");
+    log.info("😴  Waiting for SourceFile to be processed");
     SourceFileDTO.Status status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
             sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
@@ -112,18 +109,18 @@ public class ExampleConnector implements Runnable {
     this.sourceFileService.delete(sourceFile.getSourceFileUUID());
 
     list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
-    log.info("😅 LegalCase has {} source files", list.size());
+    log.info("😅  LegalCase has {} source files", list.size());
 
-    log.info("🗄 Archiving LegalCase");
+    log.info("🗄  Archiving LegalCase");
     this.legalCaseService.archive(legalCaseResponse.getLegalCaseUUID());
 
-    log.info("🗑 Deleting LegalCase");
+    log.info("🗑  Deleting LegalCase");
     this.legalCaseService.delete(legalCaseResponse.getLegalCaseUUID());
 
     try {
       this.legalCaseService.get(legalCase.getLegalCaseUUID());
     } catch (NotFoundException ignored) {
-      log.info("🥳 LegalCase has successfully been deleted, hurray!");
+      log.info("🥳  LegalCase has successfully been deleted, well done!");
     }
   }
 

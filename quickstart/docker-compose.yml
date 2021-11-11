@@ -17,7 +17,7 @@ services:
     depends_on:
       - agent
     volumes:
-      - ./data/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./dependencies/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -48,7 +48,7 @@ services:
     ports:
       - 3128:3128
     volumes:
-      - ./data/squid.conf:/etc/squid/squid.conf 
-      - ./data/squid_logs/:/var/log/squid/
+      - ./dependencies/squid.conf:/etc/squid/squid.conf
+      - ./dependencies/:/var/log/squid/
 
 

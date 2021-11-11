@@ -10,13 +10,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ExampleConnectorService {
+public class ExampleService {
   private static final Logger log = LoggerFactory.getLogger(HealthService.class);
 
   private final TaskExecutor taskExecutor;
   private final ApplicationContext applicationContext;
 
-  public ExampleConnectorService(TaskExecutor taskExecutor, ApplicationContext applicationContext) {
+  public ExampleService(TaskExecutor taskExecutor, ApplicationContext applicationContext) {
     this.taskExecutor = taskExecutor;
     this.applicationContext = applicationContext;
   }
@@ -33,7 +33,7 @@ public class ExampleConnectorService {
     final int threadPoolSize = ((ThreadPoolTaskExecutor) this.taskExecutor).getMaxPoolSize();
     for (int i = 0; i < threadPoolSize; i++) {
       Thread.sleep(500);
-      ExampleConnector connector = this.applicationContext.getBean(ExampleConnector.class);
+      ExampleThread connector = this.applicationContext.getBean(ExampleThread.class);
       this.taskExecutor.execute(connector);
     }
   }
