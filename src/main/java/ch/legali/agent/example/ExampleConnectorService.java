@@ -21,6 +21,9 @@ public class ExampleConnectorService {
     this.applicationContext = applicationContext;
   }
 
+  /**
+   * Start connector threads on {@link HealthService.StartConnectorEvent)
+   */
   @EventListener
   public void onStartConnectorEvent(
       @SuppressWarnings("unused") HealthService.StartConnectorEvent event)

@@ -39,12 +39,15 @@ public class ExampleConnector implements Runnable {
   @Override
   public void run() {
     int i = 0;
-    while (i++ < this.exampleConfig.getRuns()) {
+    while (i++ < this.exampleConfig.getIterations()) {
       log.info("Starting run {}", i);
       this.runExample();
     }
   }
 
+  /**
+   * SEE HERE! Contains the connectors logic
+   */
   private void runExample() {
     // Create
     log.info("🗂 Adding LegalCase");
@@ -71,9 +74,11 @@ public class ExampleConnector implements Runnable {
     log.info("🤓 Updating LegalCase");
     LegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.getLegalCaseUUID());
     LegalCaseDTO nameChanged =
-        LegalCaseDTO.builder().from(legalCaseResponse)
+        LegalCaseDTO.builder()
+            .from(legalCaseResponse)
             .firstname("Jane")
-            .reference("John is a girl now").build();
+            .reference("John is a girl now")
+            .build();
     this.legalCaseService.update(nameChanged);
 
     final File fileToUpload = chooseLocalFile();
@@ -94,10 +99,11 @@ public class ExampleConnector implements Runnable {
     SourceFileDTO.Status status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
             sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
-    // NOTE: will time out, if processing is disabled
+
+    // NOTE: will always time out, if processing is disabled
     if (status.equals(SourceFileDTO.Status.ERROR) || status.equals(SourceFileDTO.Status.TIMEOUT)) {
-      log.error(
-          "💥 AI was not fast enough to process this file {}", sourceFile.getSourceFileUUID());
+      log.warn(
+          "💥 legal-i was not fast enough to process this file {}", sourceFile.getSourceFileUUID());
     }
 
     List<SourceFileDTO> list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());

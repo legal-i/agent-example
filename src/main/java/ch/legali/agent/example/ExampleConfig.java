@@ -7,16 +7,18 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "legali.example")
 public class ExampleConfig {
 
-  private int runs;
+  /** Example Connector iterations (per thread) */
+  private int iterations;
 
+  /** Optional path for sample pdf files. If blank the sample.pdf form resources will be used. */
   private String filesPath;
 
-  public int getRuns() {
-    return this.runs;
+  public int getIterations() {
+    return this.iterations;
   }
 
-  public void setRuns(int runs) {
-    this.runs = runs;
+  public void setIterations(int iterations) {
+    this.iterations = iterations;
   }
 
   public String getFilesPath() {

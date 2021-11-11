@@ -27,7 +27,7 @@ TODO(mba): do we have any custom
 
 
 ## Development
-Make sure to set the secrets correctly:
+Make sure to set the secrets correctly via environment variables or a properties-file:
 
 ```
 LEGALI_CLIENT_NAME=customer-dev
