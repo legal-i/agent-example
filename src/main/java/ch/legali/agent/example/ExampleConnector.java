@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -133,8 +132,7 @@ public class ExampleConnector implements Runnable {
     if (this.exampleConfig.getFilesPath() != null && !this.exampleConfig.getFilesPath().isBlank()) {
       final File[] files = new File(this.exampleConfig.getFilesPath()).listFiles();
       if (files != null) {
-        Random rand = new Random();
-        final File f = files[rand.nextInt(files.length)];
+        final File f = files[(int) Math.floor(Math.random() * files.length)];
         log.info(
             "Chosen file {}, {} MB", f.getName(), Math.round((double) f.length() / (1024 * 1024)));
         return f;
