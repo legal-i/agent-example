@@ -30,3 +30,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# example
+example/.env
+example/agent.env
+example/data/grafana/*
+example/data/squid_logs/*
+
+
+#pdfs
+pdfs/*.pdf
