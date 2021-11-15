@@ -73,7 +73,7 @@ public class ExampleThread implements Runnable {
         LegalCaseDTO.builder()
             .from(legalCaseResponse)
             .firstname("Jane")
-            .reference("John is a girl now")
+            .reference("John changed his name")
             .build();
     this.legalCaseService.update(nameChanged);
 
@@ -86,12 +86,16 @@ public class ExampleThread implements Runnable {
             .legalCaseUUID(legalCase.getLegalCaseUUID())
             .reference("hello.pdf")
             .putMetadata("hello", "world")
+            .putMetadata("legali.dossiertype", this.chooseDossierType())
+            .putMetadata("legali.doctype", this.chooseDocType())
+            .putMetadata("legali.issuedate", "2020-01-01")
             .build();
 
     log.info("🧾  Creating SourceFile");
     this.sourceFileService.create(sourceFile, fileToUpload);
 
     log.info("😴  Waiting for SourceFile to be processed");
+    // NOTE: use with care, busy waiting and usually not required
     SourceFileDTO.Status status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
             sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
@@ -124,6 +128,11 @@ public class ExampleThread implements Runnable {
     }
   }
 
+  /**
+   * Returns either a random file from the given directory or the sample.pdf
+   *
+   * @return File
+   */
   private File chooseLocalFile() {
     // NOTE: if a directory has been specified, the connector loads a random file form there
     if (this.exampleConfig.getFilesPath() != null && !this.exampleConfig.getFilesPath().isBlank()) {
@@ -147,5 +156,14 @@ public class ExampleThread implements Runnable {
       return null;
     }
     return file;
+  }
+
+  private String chooseDocType() {
+    return List.of("type_medical", "type_financial_ik_statement", "type_legal_disposition")
+        .get((int) Math.floor(Math.random() * 3));
+  }
+
+  private String chooseDossierType() {
+    return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
   }
 }

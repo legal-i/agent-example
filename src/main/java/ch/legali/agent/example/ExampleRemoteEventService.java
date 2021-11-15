@@ -31,9 +31,9 @@ public class ExampleRemoteEventService {
   }
 
   /**
-   * Handles remote eventsl
+   * Handles remote events
    *
-   * @param remoteEvent
+   * @param remoteEvent any event
    */
   @EventListener
   public void handleDummyRemoteEvent(GenericRemoteEvent remoteEvent) {
