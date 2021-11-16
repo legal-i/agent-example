@@ -15,10 +15,18 @@ public class ExampleService {
 
   private final TaskExecutor taskExecutor;
   private final ApplicationContext applicationContext;
+  private final ExampleThread exampleThreadBean;
+  private final ExampleConfig config;
 
-  public ExampleService(TaskExecutor taskExecutor, ApplicationContext applicationContext) {
+  public ExampleService(
+      TaskExecutor taskExecutor,
+      ApplicationContext applicationContext,
+      ExampleThread exampleThreadBean,
+      ExampleConfig config) {
     this.taskExecutor = taskExecutor;
     this.applicationContext = applicationContext;
+    this.exampleThreadBean = exampleThreadBean;
+    this.config = config;
   }
 
   /**
@@ -29,6 +37,10 @@ public class ExampleService {
       @SuppressWarnings("unused") HealthService.StartConnectorEvent event)
       throws InterruptedException {
     log.info("Received StartConnectorEvent, let's go!");
+
+    if (this.config.isCleanup()) {
+      this.exampleThreadBean.cleanup();
+    }
 
     final int threadPoolSize = ((ThreadPoolTaskExecutor) this.taskExecutor).getMaxPoolSize();
     for (int i = 0; i < threadPoolSize; i++) {

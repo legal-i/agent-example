@@ -128,6 +128,17 @@ public class ExampleThread implements Runnable {
     }
   }
 
+  public void cleanup() {
+    List<LegalCaseDTO> allCases = this.legalCaseService.list();
+    for (LegalCaseDTO currentLegalCase : allCases) {
+      if ("example-agent"
+          .equals(currentLegalCase.getMetadata().getOrDefault("legali.uploader", ""))) {
+        log.info("🧹 Cleaning up {}", currentLegalCase.getLegalCaseUUID());
+        this.legalCaseService.delete(currentLegalCase.getLegalCaseUUID());
+      }
+    }
+  }
+
   /**
    * Returns either a random file from the given directory or the sample.pdf
    *
@@ -158,11 +169,13 @@ public class ExampleThread implements Runnable {
     return file;
   }
 
+  /** @return String random doc type */
   private String chooseDocType() {
     return List.of("type_medical", "type_financial_ik_statement", "type_legal_disposition")
         .get((int) Math.floor(Math.random() * 3));
   }
 
+  /** @return String random dossier type */
   private String chooseDossierType() {
     return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
   }

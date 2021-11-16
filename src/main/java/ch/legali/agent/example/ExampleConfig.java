@@ -13,6 +13,9 @@ public class ExampleConfig {
   /** Optional path for sample pdf files. If blank the sample.pdf form resources will be used. */
   private String filesPath;
 
+  /** cleanup environment before starting: deletes all legal cases added by this example. */
+  private boolean cleanup = false;
+
   public int getIterations() {
     return this.iterations;
   }
@@ -27,5 +30,13 @@ public class ExampleConfig {
 
   public void setFilesPath(String filesPath) {
     this.filesPath = filesPath;
+  }
+
+  public boolean isCleanup() {
+    return cleanup;
+  }
+
+  public void setCleanup(boolean cleanup) {
+    this.cleanup = cleanup;
   }
 }
