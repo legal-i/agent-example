@@ -94,7 +94,7 @@ public class ExampleThread implements Runnable {
     log.info("🧾  Creating SourceFile");
     this.sourceFileService.create(sourceFile, fileToUpload);
 
-    log.info("😴  Waiting for SourceFile to be processed");
+    log.info("😴  Waiting for SourceFile to be processed  (will timeout after 3 seconds!)");
     // NOTE: use with care, busy waiting and usually not required
     SourceFileDTO.Status status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(

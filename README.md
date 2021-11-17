@@ -1,6 +1,9 @@
 # legal-i Agent
 
 ## Quickstart
+*Prerequisites*
+- Recent docker and docker-compose version installed
+- Internetaccess to *.legal-i.ch
 
 1. Set your legal-i cloud credentials in `quickstart/agent.env`
 2. In the `quickstart`-directory, run `docker-compose build`.
