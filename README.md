@@ -3,7 +3,7 @@
 ## Quickstart
 *Prerequisites*
 - Recent docker and docker-compose version installed
-- Internetaccess to *.legal-i.ch
+- Internet-Access to `*.legal-i.ch`
 
 1. Set your legal-i cloud credentials in `quickstart/agent.env`
 2. In the `quickstart`-directory, run `docker-compose build`.
@@ -23,7 +23,7 @@
 # Liveness (agent is up)
 http://localhost:8085/actuator/health/liveness 
 
-# Readiness (agent is can connect to the legal-i cloud)
+# Readiness (agent can connect to the legal-i cloud)
 http://localhost:8085/actuator/health/readiness
 
 # Prometheus metrics
