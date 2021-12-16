@@ -12,6 +12,11 @@ help:
 	@echo 'Usage:'
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
+## format: run spotless google java formatter
+.PHONY: format
+format:
+	@${maven_cmd} spotless:apply
+
 ## lint: run verify and skip tests
 .PHONY: lint
 lint:

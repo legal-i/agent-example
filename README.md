@@ -1,7 +1,9 @@
 # legal-i Agent
 
 ## Quickstart
+
 *Prerequisites*
+
 - Recent docker and docker-compose version installed
 - Internet-Access to `*.legal-i.ch`
 
@@ -10,18 +12,18 @@
 3. Run `docker-compose up agent`
 4. The agent runs and starts transmitting data
 5. In case you need monitoring or proxy support, you can start the corresponding services
-    1. Monitoring: `docker-compose up prometheus grafana`
-        1. Open Grafana at http://localhost:3000/ (admin/admin)
-        2. Add Prometheus datasource pointing to http://prometheus:9090/
-        3. Currently, there is no default dashboard defined.
-    2. Http Proxy: `docker-compose up squid`
-        1. Adapt `agent.env` to use the proxy
+	1. Monitoring: `docker-compose up prometheus grafana`
+		1. Open Grafana at http://localhost:3000/ (admin/admin)
+		2. Add Prometheus datasource pointing to http://prometheus:9090/
+		3. Currently, there is no default dashboard defined.
+	2. Http Proxy: `docker-compose up squid`
+		1. Adapt `agent.env` to use the proxy
 
 ### Monitoring
 
 ```
 # Liveness (agent is up)
-http://localhost:8085/actuator/health/liveness 
+http://localhost:8085/actuator/health/liveness
 
 # Readiness (agent can connect to the legal-i cloud)
 http://localhost:8085/actuator/health/readiness
@@ -49,13 +51,13 @@ for further explanation and thrown exceptions.
 - After the Spring Boot application is initialized, the agent tries to connect to the legal-i endpoints.
 - If the connection can be established, an `HealthService.StartConnectorEvent` Event is published.
 - This has the following effects:
-    - Upon receiving this event, the `ExampleService` runs `ExampleThreads`. Those Example threads call some of the
-      available APIs.
-        - The amount of threads and the runs per thread can be configured
-        - Further, a path can be specified for choosing PDF files
-    - The `ExampleRemoteEventService` starts listening to RemoteEvents that are triggered on the API.
-        - As an example, he requests a `pong`-Event from the API.
-        - This pong will be sent by the API asynchronously and be visible in the EventHandler
+	- Upon receiving this event, the `ExampleService` runs `ExampleThreads`. Those Example threads call some of the
+	available APIs.
+		- The amount of threads and the runs per thread can be configured
+		- Further, a path can be specified for choosing PDF files
+	- The `ExampleRemoteEventService` starts listening to RemoteEvents that are triggered on the API.
+		- As an example, he requests a `pong`-Event from the API.
+		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 
 ### Entity Metadata
 
@@ -95,11 +97,11 @@ See Makefile as a reference:
 
 ```
 make ...
-  lint        run verify and skip tests
-  verify      run verify with tests
-  build       build the agent
-  dockerize   create agent docker image tagged legali-agent
-  run         run docker image 
+lint        run verify and skip tests
+verify      run verify with tests
+build       build the agent
+dockerize   create agent docker image tagged legali-agent
+run         run docker image
 ```
 
 ## Configuration and Deployment
@@ -154,13 +156,7 @@ management.endpoint.health.group.readiness.include=readinessState,agent
 
 ### Internet Access
 
-We recommend that the agent is allowed to access `*.legal-i.ch` on 443. Minimal requirement are on port 443:
-
-```
-auth.legal-i.ch
-agents.legal-i.ch
-upload.legal-i.ch
-```
+The agent needs to be allowed to access `*.legal-i.ch` on 443.
 
 ## References
 
@@ -225,3 +221,39 @@ type_medical_expert_opinion   : Gutachten
 type_medical_form             : Formular
 type_medical_report           : Arztbericht
 ```
+
+## IAM Integration
+Users are included with single sign-on. Roles and permissions are managed by group memberships.
+
+
+### Enterprise IDP connections
+See https://auth0.com/docs/connections/enterprise
+
+### Roles and Authorization
+Every user needs to have at least one valid legal-i role to access legal-i. The role is given to the user by assigning him a group with a specific pattern.
+
+- **Tenant Admin**
+- has group that contains `*legali_admin*`
+- has access to...
+	- all legal cases (without permission check)
+	- admin functions and agent panel
+
+
+- **Tech Admin**
+	- has group that contains `*legali_tech*`
+	- has access to...
+		- admin and agent panel
+	- has no access to...
+		- legal cases and data
+
+
+- **Basic**
+	- has group that contains `*legali_basic*`
+	- has access to...
+		- cases that he has access (see permission groups)
+	- has no access to...
+		- admin and agent panel
+
+### Permission groups
+All other groups that contain `*legali*` are used as permission groups.
+A basic user only has access to a legal case if they have at least one matching group.

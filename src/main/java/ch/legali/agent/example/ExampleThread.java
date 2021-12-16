@@ -54,7 +54,7 @@ public class ExampleThread implements Runnable {
             .lastname("Doe")
             .reference("123-456-789")
             .owner("DummyIamUser")
-            .addGroups("group1", "group2")
+            .addGroups("group1")
             .putMetadata("meta.dummy", "dummy value")
             .build();
     this.legalCaseService.create(legalCase);
@@ -86,9 +86,10 @@ public class ExampleThread implements Runnable {
             .legalCaseUUID(legalCase.getLegalCaseUUID())
             .reference("hello.pdf")
             .putMetadata("hello", "world")
+            .putMetadata("legali.title", "Sample Document")
             .putMetadata("legali.dossiertype", this.chooseDossierType())
             .putMetadata("legali.doctype", this.chooseDocType())
-            .putMetadata("legali.issuedate", "2020-01-01")
+            .putMetadata("legali.issuedate", "2012-12-12")
             .build();
 
     log.info("🧾  Creating SourceFile");
