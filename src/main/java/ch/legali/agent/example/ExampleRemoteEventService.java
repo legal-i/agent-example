@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+/** This service is used to react to events form the legal-i cloud. */
 @Service
 public class ExampleRemoteEventService {
   private static final Logger log = LoggerFactory.getLogger(ExampleRemoteEventService.class);

@@ -1,9 +1,17 @@
 # legal-i Agent
 
+## Component and Delivery
+
+- The legal-i agent is a dockerized Spring Boot application that ensures solid two way communication between the customers environment and the legal-i cloud.
+- The component has two sides: The SDK that talks to the cloud and the connector that talks to the customers system.
+- The latest version is available on legal-i's private github repository.
+
 ## Quickstart
 
 *Prerequisites*
 
+- Access to legal-i's github repository on https://github.com/legal-i/agent-example
+- Agent credentials to access your environment on the legal-i cloud
 - Recent docker and docker-compose version installed
 - Internet-Access to `*.legal-i.ch`
 
@@ -11,7 +19,8 @@
 2. In the `quickstart`-directory, run `docker-compose build`.
 3. Run `docker-compose up agent`
 4. The agent runs and starts transmitting data
-5. In case you need monitoring or proxy support, you can start the corresponding services
+5. Check the agent status in the UI (menu in avatar).
+6. In case you need monitoring or proxy support, you can start the corresponding services
 	1. Monitoring: `docker-compose up prometheus grafana`
 		1. Open Grafana at http://localhost:3000/ (admin/admin)
 		2. Add Prometheus datasource pointing to http://prometheus:9090/
@@ -58,6 +67,19 @@ for further explanation and thrown exceptions.
 	- The `ExampleRemoteEventService` starts listening to RemoteEvents that are triggered on the API.
 		- As an example, he requests a `pong`-Event from the API.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
+- SDK entities and methods contain JavaDoc annotations.
+
+### File Upload
+To keep a constant memory footprint on the Agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode this leads to unwanted spikes in
+memory usage.
+Ideally the files are chunked downloaded to a temporary file and then passed to the SDK.
+
+The SDK supports two file upload types:
+- CLOUDFRONT: The file is uploaded via AWS CloudFront to the ingest S3 bucket. This is generally faster and more stable, but might require additional outgoing network permissions.
+- FILE_SERVICE: The file is proxied through the legal-i file service.
+```
+legali.file-upload-type = CLOUDFRONT
+```
 
 ### Entity Metadata
 
@@ -197,6 +219,7 @@ iv-vd             : IV Waadt
 iv-vs             : IV Wallis
 iv-zg             : IV Zug
 iv-zh             : IV Zürich
+army              : Militärversicherung
 ```
 
 ### Document Types

@@ -1,5 +1,6 @@
 package ch.legali.agent.example;
 
+import ch.legali.agent.example.config.ExampleConfig;
 import ch.legali.agent.sdk.exceptions.AlreadyExistsException;
 import ch.legali.agent.sdk.exceptions.NotFoundException;
 import ch.legali.agent.sdk.models.LegalCaseDTO;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+/** Note that the connector API is thread-safe. */
 @Component
 public class ExampleThread implements Runnable {
 
@@ -43,7 +45,10 @@ public class ExampleThread implements Runnable {
     }
   }
 
-  /** SEE HERE! Contains the connectors logic */
+  /**
+   * This is the dummy logic of the connector. You can download and check JavaDoc of each method and
+   * entity of the SDK.
+   */
   private void runExample() {
     // Create
     log.info("🗂  Adding LegalCase");
@@ -77,6 +82,12 @@ public class ExampleThread implements Runnable {
             .build();
     this.legalCaseService.update(nameChanged);
 
+    /*
+     * To keep a constant memory footprint on the agent, the SDK uses a FileObject and not a ByteArrayResource.
+     * PDF files can be large if they contain images (> 500MB), in multi-threaded mode this leads to unwanted spikes in
+     * memory usage.
+     * Ideally the files are chunked downloaded to a temporary file and then passed to the SDK.
+     */
     final File fileToUpload = chooseLocalFile();
 
     // add / delete a sourcefile

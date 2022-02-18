@@ -1,5 +1,6 @@
 package ch.legali.agent.example;
 
+import ch.legali.agent.example.config.ExampleConfig;
 import ch.legali.agent.sdk.internal.HealthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
+/**
+ * The ExampleService the ExampleThreads once the connection to the legal-i cloud is established.
+ */
 @Service
 public class ExampleService {
   private static final Logger log = LoggerFactory.getLogger(HealthService.class);
@@ -38,10 +42,12 @@ public class ExampleService {
       throws InterruptedException {
     log.info("Received StartConnectorEvent, let's go!");
 
+    // Cleanup deletes all cases uploaded by this agent
     if (this.config.isCleanup()) {
       this.exampleThreadBean.cleanup();
     }
 
+    // run example connector threads according to tasks pool
     final int threadPoolSize = ((ThreadPoolTaskExecutor) this.taskExecutor).getMaxPoolSize();
     for (int i = 0; i < threadPoolSize; i++) {
       Thread.sleep(500);

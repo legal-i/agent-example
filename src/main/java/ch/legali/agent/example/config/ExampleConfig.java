@@ -1,4 +1,4 @@
-package ch.legali.agent.example;
+package ch.legali.agent.example.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class ExampleConfig {
   }
 
   public boolean isCleanup() {
-    return cleanup;
+    return this.cleanup;
   }
 
   public void setCleanup(boolean cleanup) {
