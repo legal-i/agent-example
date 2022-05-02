@@ -1,6 +1,6 @@
 package ch.legali.agent.example;
 
-import ch.legali.agent.sdk.event.NamedRemoteEvent;
+import ch.legali.agent.sdk.event.RemoteEvent;
 import ch.legali.agent.sdk.event.RemoteEventConfirmEvent;
 import ch.legali.agent.sdk.internal.HealthService;
 import ch.legali.agent.sdk.internal.client.EventClient;
@@ -48,7 +48,7 @@ public class ExampleRemoteEventService {
    * @param remoteEvent any event
    */
   @EventListener
-  public void handleDummyRemoteEvent(NamedRemoteEvent remoteEvent) {
+  public void handleDummyRemoteEvent(RemoteEvent remoteEvent) {
     switch (remoteEvent.getName()) {
 
         // Status Change

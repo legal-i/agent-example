@@ -225,24 +225,47 @@ army              : Militärversicherung
 ### Document Types
 
 ```
-type_admin                    : Admin
-type_admin_claim_report_uvg   : Schadenmeldung UVG
-type_admin_facts_sheet        : Feststellungsblatt
-type_admin_iv_registration    : IV Anmeldung
-type_admin_table_of_content   : Inhaltsverzeichnis
-type_financial                : Finanziell
-type_financial_allowance_overview: Detaillierte Taggeldübersicht
-type_financial_ik_statement   : IK Auszug
-type_financial_questionnaire  : Arbeitgeberfragebogen
-type_legal                    : Rechtlich
-type_legal_attorney_submission: Anwaltliche Eingaben
-type_legal_court_decision     : Urteil
-type_legal_disposal           : Verfügung
-type_medical                  : Medizinisch
-type_medical_certificate      : Arztzeugnis
-type_medical_expert_opinion   : Gutachten
-type_medical_form             : Formular
-type_medical_report           : Arztbericht
+type_admin    Admin
+type_admin_claim_report_uvg         : Schaden- / Krankheitsmeldungen
+type_admin_facts_sheet              : Feststellungsblätter
+type_admin_iv_registration          : IV Anmeldungen
+type_admin_protocol                 : Protokolle
+type_admin_table_of_content         : Inhaltsverzeichnisse
+type_correspondence                 : Korrespondenz
+type_correspondence_external_emails : Externe Emails
+type_correspondence_internal_emails : Interne Emails
+type_correspondence_letters         : Briefe
+type_financial                      : Finanziell
+type_financial_allowance_overview   : Taggeld-Abrechnungen
+type_financial_invoice              : Rechnungen
+type_internal                       : Interne-Dokumente
+type_internal_antifraud             : Akten der internen Betrugsbekämpfungsstelle
+type_internal_reports               : Interne Berichte
+type_legal                          : Rechtlich
+type_legal_attorney_submission      : Anwaltliche Eingaben
+type_legal_court_decision           : Urteile
+type_legal_criminal_file            : Strafakten
+type_legal_disposal                 : Verfügungen
+type_legal_objection                : Einsprachen
+type_legal_objection_decision       : Einsprache-Entscheide
+type_legal_pre_disposal             : Vorbescheide / Formlose Ablehnungen
+type_legal_proxy                    : Vollmachten
+type_legal_submissions_court        : Eingaben Gerichtsverfahren
+type_medical                        : Medizinisch
+type_medical_certificate            : AUF-Zeugnisse
+type_medical_cost_credit            : Kostengutsprachen
+type_medical_expert_opinion         : Gutachten
+type_medical_insurance_report       : Vers. interne Arztberichte
+type_medical_prescription           : Med. Verordnungen
+type_medical_report                 : Arztberichte
+type_other                          : Andere
+type_other_phone_memo               : Telefon- / Aktennotizen
+type_profession                     : Berufliches
+type_profession_cv                  : Lebensläufe
+type_profession_employment_contract : Arbeitsverträge
+type_profession_ik_statement        : IK-Auszüge
+type_profession_questionnaire       : Arbeitgeberfragebogen
+type_profession_wage_statements     : Lohnabrechnungen
 ```
 
 ## IAM Integration
