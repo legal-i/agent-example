@@ -1,12 +1,13 @@
-package ch.legali.agent.example;
+package ch.legali.sdk.example;
 
-import ch.legali.agent.example.config.ExampleConfig;
-import ch.legali.agent.sdk.exceptions.AlreadyExistsException;
-import ch.legali.agent.sdk.exceptions.NotFoundException;
-import ch.legali.agent.sdk.models.LegalCaseDTO;
-import ch.legali.agent.sdk.models.SourceFileDTO;
-import ch.legali.agent.sdk.services.LegalCaseService;
-import ch.legali.agent.sdk.services.SourceFileService;
+import ch.legali.sdk.example.config.ExampleConfig;
+import ch.legali.sdk.exceptions.AlreadyExistsException;
+import ch.legali.sdk.exceptions.NotFoundException;
+import ch.legali.sdk.models.AgentLegalCaseDTO;
+import ch.legali.sdk.models.AgentSourceFileDTO;
+import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
+import ch.legali.sdk.services.LegalCaseService;
+import ch.legali.sdk.services.SourceFileService;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -52,8 +53,8 @@ public class ExampleThread implements Runnable {
   private void runExample() {
     // Create
     log.info("🗂  Adding LegalCase");
-    LegalCaseDTO legalCase =
-        LegalCaseDTO.builder()
+    AgentLegalCaseDTO legalCase =
+        AgentLegalCaseDTO.builder()
             .legalCaseUUID(UUID.randomUUID())
             .firstname("John")
             .lastname("Doe")
@@ -73,9 +74,9 @@ public class ExampleThread implements Runnable {
 
     // update legal case
     log.info("🤓  Updating LegalCase");
-    LegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.getLegalCaseUUID());
-    LegalCaseDTO nameChanged =
-        LegalCaseDTO.builder()
+    AgentLegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.getLegalCaseUUID());
+    AgentLegalCaseDTO nameChanged =
+        AgentLegalCaseDTO.builder()
             .from(legalCaseResponse)
             .firstname("Jane")
             .reference("John changed his name")
@@ -91,8 +92,8 @@ public class ExampleThread implements Runnable {
     final File fileToUpload = chooseLocalFile();
 
     // add / delete a sourcefile
-    SourceFileDTO sourceFile =
-        SourceFileDTO.builder()
+    AgentSourceFileDTO sourceFile =
+        AgentSourceFileDTO.builder()
             .sourceFileUUID(UUID.randomUUID())
             .legalCaseUUID(legalCase.getLegalCaseUUID())
             .reference("hello.pdf")
@@ -108,17 +109,18 @@ public class ExampleThread implements Runnable {
 
     log.info("😴  Waiting for SourceFile to be processed  (will timeout after 3 seconds!)");
     // NOTE: use with care, busy waiting and usually not required
-    SourceFileDTO.Status status =
+    SourceFileStatus status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
             sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
 
     // NOTE: will always time out, if processing is disabled
-    if (status.equals(SourceFileDTO.Status.ERROR) || status.equals(SourceFileDTO.Status.TIMEOUT)) {
+    if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
       log.warn(
           "💥 legal-i was not fast enough to process this file {}", sourceFile.getSourceFileUUID());
     }
 
-    List<SourceFileDTO> list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
+    List<AgentSourceFileDTO> list =
+        this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
     log.info("1️⃣ LegalCase has {} source files", list.size());
 
     log.info("␡ Deleting SourceFile");
@@ -141,8 +143,8 @@ public class ExampleThread implements Runnable {
   }
 
   public void cleanup() {
-    List<LegalCaseDTO> allCases = this.legalCaseService.list();
-    for (LegalCaseDTO currentLegalCase : allCases) {
+    List<AgentLegalCaseDTO> allCases = this.legalCaseService.list();
+    for (AgentLegalCaseDTO currentLegalCase : allCases) {
       if ("example-agent"
           .equals(currentLegalCase.getMetadata().getOrDefault("legali.uploader", ""))) {
         log.info("🧹 Cleaning up {}", currentLegalCase.getLegalCaseUUID());

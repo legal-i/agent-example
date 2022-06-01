@@ -1,4 +1,4 @@
-package ch.legali.agent.example.config;
+package ch.legali.sdk.example.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

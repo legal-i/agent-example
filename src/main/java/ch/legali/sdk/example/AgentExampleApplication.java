@@ -1,6 +1,6 @@
-package ch.legali.agent.example;
+package ch.legali.sdk.example;
 
-import ch.legali.agent.sdk.LegaliAgentSdk;
+import ch.legali.sdk.LegaliAgentSdk;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;

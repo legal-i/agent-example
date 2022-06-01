@@ -1,6 +1,6 @@
-package ch.legali.agent.example.config;
+package ch.legali.sdk.example.config;
 
-import ch.legali.agent.sdk.FullConfig;
+import ch.legali.sdk.FullConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;

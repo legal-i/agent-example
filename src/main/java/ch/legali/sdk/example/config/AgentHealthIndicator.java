@@ -1,6 +1,6 @@
-package ch.legali.agent.example.config;
+package ch.legali.sdk.example.config;
 
-import ch.legali.agent.sdk.internal.HealthService;
+import ch.legali.sdk.internal.HealthService;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;

@@ -2,17 +2,17 @@
 
 ## Component and Delivery
 
-- The legal-i agent is a dockerized Spring Boot application that ensures solid two way communication between the customers environment and the legal-i cloud.
-- The component has two sides: The SDK that talks to the cloud and the connector that talks to the customers system.
-- The latest version is available on legal-i's private github repository.
+- The legal-i agent is a dockerized Spring Boot application that ensures solid two-way communication between the customers' environment and the legal-i cloud.
+- The component has two sides: The SDK that talks to the cloud and the connector that talks to the customer system.
+- The latest version is available on legal-i's private GitHub repository.
 
 ## Quickstart
 
 *Prerequisites*
 
-- Access to legal-i's github repository on https://github.com/legal-i/agent-example
+- Access to legal-i's GitHub repository on https://github.com/legal-i/agent-example
 - Agent credentials to access your environment on the legal-i cloud
-- Recent docker and docker-compose version installed
+- Recent docker and docker-compose versions installed
 - Internet-Access to `*.legal-i.ch`
 
 1. Set your legal-i cloud credentials in `quickstart/agent.env`
@@ -62,20 +62,20 @@ for further explanation and thrown exceptions.
 - This has the following effects:
 	- Upon receiving this event, the `ExampleService` runs `ExampleThreads`. Those Example threads call some of the
 	available APIs.
-		- The amount of threads and the runs per thread can be configured
+		- The number of threads and the runs per thread can be configured
 		- Further, a path can be specified for choosing PDF files
-	- The `ExampleRemoteEventService` starts listening to RemoteEvents that are triggered on the API.
+	- The `ExampleRemoteEventService` starts listening to events that are triggered on the API.
 		- As an example, he requests a `pong`-Event from the API.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 - SDK entities and methods contain JavaDoc annotations.
 
 ### File Upload
-To keep a constant memory footprint on the Agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode this leads to unwanted spikes in
+To keep a constant memory footprint on the Agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode, this leads to unwanted spikes in
 memory usage.
-Ideally the files are chunked downloaded to a temporary file and then passed to the SDK.
+Ideally, the files are chunked, downloaded to a temporary file, and then passed to the SDK.
 
 The SDK supports two file upload types:
-- CLOUDFRONT: The file is uploaded via AWS CloudFront to the ingest S3 bucket. This is generally faster and more stable, but might require additional outgoing network permissions.
+- CLOUDFRONT: The file is uploaded via AWS CloudFront to the ingest S3 bucket. This is generally faster and more stable but might require additional outgoing network permissions.
 - FILE_SERVICE: The file is proxied through the legal-i file service.
 ```
 legali.file-upload-type = CLOUDFRONT
@@ -101,10 +101,10 @@ legali.issuedate        = 2020-01-01
 # set the document title
 legali.title            = Dokumenttitel
 
-# if mutlile languages are available, suffix with 2 letter language key
+# if multiple languages are available, suffix with two letter language key
 legali.title_fr         = titre du document
 
-# document language in two character ke, if empty its detected
+# document language in two-character key. If empty, it's detected
 legali.lang             = de
 
 Technical
@@ -112,6 +112,73 @@ Technical
 legali.pipeline.disabled = true
 
 ```
+
+### Events
+
+The agent must subscribe to the events it wants to receive.
+
+```
+@PostConstruct
+public void init() {
+	this.eventService.subscribe(PongEvent.class, ExportPublishedEvent.class);
+}
+```
+
+After subscribing, the Agent can listen for events by creating event listener methods.
+Annotate methods with the `@EventListener` annotation and specify the event class as the method parameter.
+
+```
+@EventListener
+public void handle(PongEvent event) {
+	log.info("🏓 PingPong Event received: " + "\nid " + event.getUuid());
+	// Ack the event
+	this.applicationEventPublisher.publishEvent(new ConfirmEventRequest(event.getUuid()));
+}
+```
+
+The following events are currently supported:
+
+`PongEvent`
+Emitted after a PongRequest is requested for debugging.
+Request with `this.eventClient.ping(new PingRequest("ping"));`
+
+`LegalCaseCreatedEvent`
+Emitted when a user creates a new legal case via the frontend.
+
+`LegalCaseUpdatedEvent`
+Emitted when a user updates a legal case via the frontend.
+
+`LegalCaseStatusChangedEvent`
+Emitted when a user changes the status of a legal case via the frontend, (OPEN, ARCHIVED).
+
+`LegalCaseReadyEvent`
+Emitted when all sourcefiles of a legal case are successfully processed.
+
+`SourceFileCreatedEvent`.
+Emitted when a user creates a source file via the frontend.
+
+`SourceFileUpdatedEvent`
+Emitted when a user changes the Dossier Type (aka Field / Akte) in the frontend
+
+`SourceFileTaskFailedEvent`
+Emitted by the pipeline when processing of the source file failed.
+
+`ExportCreatedEvent`
+Emitted when a user creates a new export through the frontend.
+
+`ExportPublishedEvent`
+Emitted when a user publishes a new export with a link or an email.
+
+`ExportViewedEvent`
+Emitted when an external user opens/downloads an exported pdf.
+
+The event handler must send back a confirmation to the API. When the API does not receive a confirmation, it will send the event
+again after 5 minutes.
+```
+this.applicationEventPublisher.publishEvent(new ConfirmEventRequest(event.getUuid()));
+```
+Every event contains a unique id that needs to be sent back to confirm the event (ACK).
+
 
 ## Build, create docker image and run
 
@@ -128,7 +195,7 @@ run         run docker image
 
 ## Configuration and Deployment
 
-All configuration can be set as environment variables by Spring Boot configuration convention.
+All configurations can be set as environment variables by Spring Boot configuration convention.
 
 ````
 # Example Connector Config, set iterations and threads
@@ -144,7 +211,7 @@ legali.api-url=<>
 legali.client-id=<>
 legali.client-secret=<>
 
-# Upload via cloudfront or proxied via api, use cloud front upload whenever possible
+# Upload via cloudfront or proxied via API, use cloud front upload whenever possible
 legali.cloud-front-upload=true
 
 # HTTP connection
@@ -159,9 +226,9 @@ legali.cloud-front-upload=true
 
 # Logging and Debugging
 logging.level.root=INFO
-logging.level.ch.legali.agent.example=INFO
-logging.level.ch.legali.agent.sdk=INFO
-logging.level.ch.legali.agent.sdk.internal=WARN
+logging.level.ch.legali.sdk.example=INFO
+logging.level.ch.legali.sdk.sdk=INFO
+logging.level.ch.legali.sdk.sdk.internal=WARN
 
 # Debug HTTP connection
 #logging.level.feign = DEBUG
@@ -182,7 +249,8 @@ The agent needs to be allowed to access `*.legal-i.ch` on 443.
 
 ## References
 
-## Dossier Types
+
+### Dossier Types
 
 ```
 unknown           : Anderes (default)

@@ -1,7 +1,7 @@
-package ch.legali.agent.example;
+package ch.legali.sdk.example;
 
-import ch.legali.agent.example.config.ExampleConfig;
-import ch.legali.agent.sdk.internal.HealthService;
+import ch.legali.sdk.example.config.ExampleConfig;
+import ch.legali.sdk.internal.HealthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

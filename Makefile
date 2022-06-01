@@ -1,3 +1,5 @@
+SHELL:=/bin/bash
+
 DOCKER_TAG=legali-agent
 
 ifeq ($(OS),Windows_NT) 
