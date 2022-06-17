@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>ch.legali</groupId>
 			<artifactId>agent-sdk</artifactId>
-			<version>0.12.1</version>
+			<version>0.12.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
