@@ -69,16 +69,15 @@ for further explanation and thrown exceptions.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 - SDK entities and methods contain JavaDoc annotations.
 
-### File Upload
+### File Transfer
 To keep a constant memory footprint on the Agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode, this leads to unwanted spikes in
 memory usage.
-Ideally, the files are chunked, downloaded to a temporary file, and then passed to the SDK.
 
-The SDK supports two file upload types:
+The SDK supports two file transfer types:
 - CLOUDFRONT: The file is uploaded via AWS CloudFront to the ingest S3 bucket. This is generally faster and more stable but might require additional outgoing network permissions.
-- FILE_SERVICE: The file is proxied through the legal-i file service.
+- LEGALI: The file is proxied through the legal-i file service. Do not use this in production unless there are network restrictions.
 ```
-legali.file-upload-type = CLOUDFRONT
+legali.fileservice = CLOUDFRONT
 ```
 
 ### Entity Metadata

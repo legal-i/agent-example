@@ -124,6 +124,8 @@ public class ExampleThread implements Runnable {
     } catch (FileConflictException fileConflictException) {
       log.info("🙅‍  Sourcefile file are different, refused to do something!‍️");
     }
+    log.info("🧾  Creating the same SourceFile AGAIN (creates are idempotent)");
+    this.sourceFileService.create(sourceFile, fileToUpload);
 
     List<AgentSourceFileDTO> list =
         this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
