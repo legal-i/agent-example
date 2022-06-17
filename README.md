@@ -351,22 +351,19 @@ Every user needs to have at least one valid legal-i role to access legal-i. The 
 - has access to...
 	- all legal cases (without permission check)
 	- admin functions and agent panel
+	- can crud legalcases and sourcefiles
 
 
-- **Tech Admin**
-	- has group that contains `*legali_tech*`
-	- has access to...
-		- admin and agent panel
-	- has no access to...
-		- legal cases and data
+- **Power User**
+	- has group that contains `*legali_power*`
+	- has access to all legal cases
+	- can crud legalcases and sourcefile
 
 
 - **Basic**
 	- has group that contains `*legali_basic*`
 	- has access to...
 		- cases that he has access (see permission groups)
-	- has no access to...
-		- admin and agent panel
 
 ### Permission groups
 All other groups that contain `*legali*` are used as permission groups.
