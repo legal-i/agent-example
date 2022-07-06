@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
+        <notes>False Positive</notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*@.*$</packageUrl>
-        <cvssBelow>10.0</cvssBelow>
-    </suppress>			
+        <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes>TODO: LEG-3992</notes>
+        <cve>CVE-2022-33915</cve>
+    </suppress>
 </suppressions>

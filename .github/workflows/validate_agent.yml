@@ -6,11 +6,20 @@
 # - LEGALI_AUTH_URL: auth URL
 # - LEGALI_CLIENT_SECRET: guess!
 # - LEGALI_CLIENT_ID: <>
+# - ACTION_MONITORING_SLACK: Slack notification URL
 
 name: Agent Example Validation
 
 # keep it simple for now, create a new Docker image after each rebuild
-on: [push]
+# but do not run when a new tag is pushed
+on:
+  push:
+    branches:
+      - '**'
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # run once per day at 06.00 UTC
+    - cron: '0 6 * * *'
 
 jobs:
   validate-sdk-agent:
@@ -54,3 +63,11 @@ jobs:
             else
               exit 1;
             fi
+      - name: Report Status
+        if: always()
+        uses: ravsamhq/notify-slack-action@v1
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.ACTION_MONITORING_SLACK }}

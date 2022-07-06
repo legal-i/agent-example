@@ -2,7 +2,7 @@ SHELL:=/bin/bash
 
 DOCKER_TAG=legali-agent
 
-ifeq ($(OS),Windows_NT) 
+ifeq ($(OS),Windows_NT)
     maven_cmd := mvnw.cmd
 else
     maven_cmd := ./mvnw
@@ -29,10 +29,14 @@ verify:
 build:
 	@${maven_cmd} package -DskipTests
 
-## dockerize: create agent docker image 
+## github-release: build a zip file to release on Github
+github-release:
+	@zip -r sdk-release.zip ./docker/ ./Makefile mvn* pmd* pom.xml proj* ./quickstart/ README.md spot* ./src/
+
+## dockerize: create agent docker image
 dockerize:
 	@docker build -f docker/Dockerfile -t "$(DOCKER_TAG)" .
 
-## run: run docker image 
+## run: run docker image
 run: dockerize
 	@docker run -e LEGALI_API_URL -e LEGALI_CLIENT_SECRET -t "$(DOCKER_TAG)"

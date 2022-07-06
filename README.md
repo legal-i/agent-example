@@ -47,7 +47,8 @@ http://localhost:8085/actuator/prometheus
 Make sure to set the secrets correctly via environment variables or a properties file:
 
 ```
-LEGALI_API_URL=<>
+LEGALI_API_URL=https://agents.legal-i.ch/api/v1
+LEGALI_AUTH_URL=https://auth.legal-i.ch/
 LEGALI_CLIENT_ID=<>
 LEGALI_CLIENT_SECRET=<>
 ```
@@ -64,7 +65,7 @@ for further explanation and thrown exceptions.
 	available APIs.
 		- The number of threads and the runs per thread can be configured
 		- Further, a path can be specified for choosing PDF files
-	- The `ExampleRemoteEventService` starts listening to events that are triggered on the API.
+	- The `ExampleEventService` starts listening to events that are triggered on the API.
 		- As an example, he requests a `pong`-Event from the API.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 - SDK entities and methods contain JavaDoc annotations.
@@ -130,16 +131,21 @@ Annotate methods with the `@EventListener` annotation and specify the event clas
 @EventListener
 public void handle(PongEvent event) {
 	log.info("🏓 PingPong Event received: " + "\nid " + event.getUuid());
-	// Ack the event
-	this.applicationEventPublisher.publishEvent(new ConfirmEventRequest(event.getUuid()));
+	this.eventService.acknowledge(event)
 }
 ```
 
-The following events are currently supported:
+Every event handler must ack the event. When the API does not receive an ack, it will send the event
+again after 5 minutes.
+
+```
+this.eventService.acknowledge(event)
+```
+*Implemented Events:*
 
 `PongEvent`
 Emitted after a PongRequest is requested for debugging.
-Request with `this.eventClient.ping(new PingRequest("ping"));`
+Request with `this.eventClient.ping();`
 
 `LegalCaseCreatedEvent`
 Emitted when a user creates a new legal case via the frontend.
@@ -170,14 +176,6 @@ Emitted when a user publishes a new export with a link or an email.
 
 `ExportViewedEvent`
 Emitted when an external user opens/downloads an exported pdf.
-
-The event handler must send back a confirmation to the API. When the API does not receive a confirmation, it will send the event
-again after 5 minutes.
-```
-this.applicationEventPublisher.publishEvent(new ConfirmEventRequest(event.getUuid()));
-```
-Every event contains a unique id that needs to be sent back to confirm the event (ACK).
-
 
 ## Build, create docker image and run
 

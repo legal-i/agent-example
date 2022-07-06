@@ -12,12 +12,10 @@ import ch.legali.api.events.SourceFileCreatedEvent;
 import ch.legali.api.events.SourceFileTaskFailedEvent;
 import ch.legali.api.events.SourceFileUpdatedEvent;
 import ch.legali.sdk.internal.HealthService;
-import ch.legali.sdk.requests.ConfirmEventRequest;
-import ch.legali.sdk.requests.PingRequest;
 import ch.legali.sdk.services.EventService;
-import ch.legali.sdk.services.FileDownloadService;
-import java.io.File;
+import ch.legali.sdk.services.FileService;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -29,14 +27,13 @@ import org.springframework.stereotype.Service;
 
 /** This service is used to react to events form the legal-i cloud. */
 @Service
-public class ExampleRemoteEventService {
-  private static final Logger log = LoggerFactory.getLogger(ExampleRemoteEventService.class);
-  private final FileDownloadService fileDownloadService;
+public class ExampleEventService {
+  private static final Logger log = LoggerFactory.getLogger(ExampleEventService.class);
+  private final FileService fileService;
   private final EventService eventService;
 
-  public ExampleRemoteEventService(
-      FileDownloadService fileDownloadService, EventService eventService) {
-    this.fileDownloadService = fileDownloadService;
+  public ExampleEventService(FileService fileService, EventService eventService) {
+    this.fileService = fileService;
     this.eventService = eventService;
   }
 
@@ -72,7 +69,7 @@ public class ExampleRemoteEventService {
   public void onStartConnectorEvent(
       @SuppressWarnings("unused") HealthService.StartConnectorEvent event) {
     log.info("🏓 Requesting a pong remote event");
-    this.eventService.ping(new PingRequest("ping"));
+    this.eventService.ping();
   }
 
   /*
@@ -82,7 +79,7 @@ public class ExampleRemoteEventService {
   @EventListener
   public void handle(PongEvent event) {
     log.info("🏓 PingPong Event received: " + "\nid " + event.getUuid());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   // legalcase handlers
@@ -94,7 +91,7 @@ public class ExampleRemoteEventService {
             + event.getLegalCase().getFirstname()
             + " "
             + event.getLegalCase().getLastname());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
@@ -105,7 +102,7 @@ public class ExampleRemoteEventService {
             + event.getLegalCaseUuid()
             + " "
             + event.getStatus());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
@@ -116,13 +113,13 @@ public class ExampleRemoteEventService {
             + event.getLegalCase().getFirstname()
             + " "
             + event.getLegalCase().getLastname());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(LegalCaseReadyEvent event) {
     log.info("LegalCaseReadyEvent: " + "\n" + event.getLegalCaseUuid());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   // sourcefiles handler
@@ -130,19 +127,19 @@ public class ExampleRemoteEventService {
   @EventListener
   public void handle(SourceFileCreatedEvent event) {
     log.info("SourceFileCreatedEvent: " + "\n" + event.getSourceFile().getSourceFileUUID());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(SourceFileUpdatedEvent event) {
     log.info("SourceFileUpdatedEvent: " + "\n" + event.getField());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(SourceFileTaskFailedEvent event) {
     log.info("SourceFileTaskFailedEvent: " + "\n" + event.getSourceFileUuid());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
@@ -152,15 +149,14 @@ public class ExampleRemoteEventService {
     log.info("    Case Id   : " + event.getLegalCaseUuid());
     log.info("    Timestamp : " + event.getTs());
 
-    File file = this.fileDownloadService.downloadFile(event.getFileUri());
-    try {
-      Files.copy(file.toPath(), Path.of("./dummy.pdf"), StandardCopyOption.REPLACE_EXISTING);
+    try (InputStream is = this.fileService.downloadFile(event.getFileUri())) {
+      Files.copy(is, Path.of("./dummy.pdf"), StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    log.info("⤵️  Downloaded file: {}, Size: {}", file.getName(), file.length());
+    log.info("⤵️  Downloaded file: {}", event.getFileUri());
 
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
@@ -174,13 +170,13 @@ public class ExampleRemoteEventService {
             + event.getLink()
             + "\n"
             + event.getEmail());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(ExportViewedEvent event) {
     log.info(
         "📖 ExportViewedEvent: " + "\n" + event.getLegalCaseUuid() + " " + event.getOpenedBy());
-    this.eventService.confirm(new ConfirmEventRequest(event.getUuid()));
+    this.eventService.acknowledge(event);
   }
 }

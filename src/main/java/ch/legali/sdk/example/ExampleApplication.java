@@ -5,13 +5,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(
-    scanBasePackageClasses = {LegaliAgentSdk.class, AgentExampleApplication.class})
+@SpringBootApplication(scanBasePackageClasses = {LegaliAgentSdk.class, ExampleApplication.class})
 @EnableScheduling
-public class AgentExampleApplication {
+public class ExampleApplication {
 
   @SuppressWarnings("resource")
   public static void main(String[] args) {
-    SpringApplication.run(AgentExampleApplication.class, args);
+    SpringApplication.run(ExampleApplication.class, args);
   }
 }
