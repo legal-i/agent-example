@@ -3,7 +3,7 @@ SHELL:=/bin/bash
 DOCKER_TAG=legali-agent
 
 ifeq ($(OS),Windows_NT)
-    maven_cmd := mvnw.cmd
+    maven_cmd := .\mvnw.cmd
 else
     maven_cmd := ./mvnw
 endif

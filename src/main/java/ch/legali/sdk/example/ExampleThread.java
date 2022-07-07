@@ -3,9 +3,11 @@ package ch.legali.sdk.example;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.exceptions.FileConflictException;
 import ch.legali.sdk.exceptions.NotFoundException;
+import ch.legali.sdk.models.AgentExportDTO;
 import ch.legali.sdk.models.AgentLegalCaseDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
+import ch.legali.sdk.services.ExportService;
 import ch.legali.sdk.services.LegalCaseService;
 import ch.legali.sdk.services.SourceFileService;
 import java.io.IOException;
@@ -30,14 +32,17 @@ public class ExampleThread implements Runnable {
 
   private final LegalCaseService legalCaseService;
   private final SourceFileService sourceFileService;
+  private final ExportService exportService;
   private final ExampleConfig exampleConfig;
 
   public ExampleThread(
       LegalCaseService legalCaseService,
       SourceFileService sourceFileService,
+      ExportService exportService,
       ExampleConfig exampleConfig) {
     this.legalCaseService = legalCaseService;
     this.sourceFileService = sourceFileService;
+    this.exportService = exportService;
     this.exampleConfig = exampleConfig;
   }
 
@@ -135,6 +140,17 @@ public class ExampleThread implements Runnable {
       List<AgentSourceFileDTO> list =
           this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
       log.info("1️⃣ LegalCase has {} source files", list.size());
+
+      List<AgentExportDTO> exportsList = this.exportService.list(legalCase.getLegalCaseUUID());
+      log.info("1️⃣ LegalCase has {} exports", exportsList.size());
+
+      UUID exportUUID = UUID.randomUUID();
+      try {
+        AgentExportDTO export = this.exportService.get(exportUUID);
+        log.info("1️⃣ LegalCase has export with uuid {}", export.exportUUID());
+      } catch (NotFoundException e) {
+        log.info("1️⃣ LegalCase does not have export with uuid {}", exportUUID);
+      }
 
       log.info("␡ Deleting SourceFile");
       this.sourceFileService.delete(sourceFile.getSourceFileUUID());

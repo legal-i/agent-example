@@ -144,17 +144,17 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(ExportCreatedEvent event) {
-    log.info("🍻  ExportCreatedEvent: " + event.getExportUuid());
-    log.info("    Recipient : " + event.getRecipient());
-    log.info("    Case Id   : " + event.getLegalCaseUuid());
+    log.info("🍻  ExportCreatedEvent: " + event.getExport().exportUUID());
+    log.info("    Recipient : " + event.getExport().recipient());
+    log.info("    Case Id   : " + event.getExport().legalCaseUUID());
     log.info("    Timestamp : " + event.getTs());
 
-    try (InputStream is = this.fileService.downloadFile(event.getFileUri())) {
+    try (InputStream is = this.fileService.downloadFile(event.getExport().fileUri())) {
       Files.copy(is, Path.of("./dummy.pdf"), StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    log.info("⤵️  Downloaded file: {}", event.getFileUri());
+    log.info("⤵️  Downloaded file: {}", event.getExport().fileUri());
 
     this.eventService.acknowledge(event);
   }
@@ -163,11 +163,11 @@ public class ExampleEventService {
   public void handle(ExportSharedEvent event) {
     log.info(
         "✉️ ExportSharedEvent: "
-            + event.getExportUuid()
+            + event.getExport().exportUUID()
             + "\n"
             + event.getMethod()
             + "\n"
-            + event.getLink()
+            + event.getExport().fileUri()
             + "\n"
             + event.getEmail());
     this.eventService.acknowledge(event);
@@ -176,7 +176,11 @@ public class ExampleEventService {
   @EventListener
   public void handle(ExportViewedEvent event) {
     log.info(
-        "📖 ExportViewedEvent: " + "\n" + event.getLegalCaseUuid() + " " + event.getOpenedBy());
+        "📖 ExportViewedEvent: "
+            + "\n"
+            + event.getExport().legalCaseUUID()
+            + " "
+            + event.getUser().getRemoteAddr());
     this.eventService.acknowledge(event);
   }
 }

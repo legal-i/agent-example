@@ -3,7 +3,7 @@
 ## Component and Delivery
 
 - The legal-i agent is a dockerized Spring Boot application that ensures solid two-way communication between the customers' environment and the legal-i cloud.
-- The component has two sides: The SDK that talks to the cloud and the connector that talks to the customer system.
+- The component has two sides: The SDK that talks to the cloud and the connector that speaks to the customer system.
 - The latest version is available on legal-i's private GitHub repository.
 
 ## Quickstart
@@ -23,9 +23,9 @@
 6. In case you need monitoring or proxy support, you can start the corresponding services
 	1. Monitoring: `docker-compose up prometheus grafana`
 		1. Open Grafana at http://localhost:3000/ (admin/admin)
-		2. Add Prometheus datasource pointing to http://prometheus:9090/
+		2. Add Prometheus data source pointing to http://prometheus:9090/
 		3. Currently, there is no default dashboard defined.
-	2. Http Proxy: `docker-compose up squid`
+	2. HTTP Proxy: `docker-compose up squid`
 		1. Adapt `agent.env` to use the proxy
 
 ### Monitoring
@@ -53,7 +53,7 @@ LEGALI_CLIENT_ID=<>
 LEGALI_CLIENT_SECRET=<>
 ```
 
-In the Example Connector, you can see how the different APIs are called. JavaDoc can be downloaded for the SDK module
+In the Example Connector, you see how to call the different APIs. JavaDoc can be downloaded for the SDK module
 for further explanation and thrown exceptions.
 
 ### Overview:
@@ -65,18 +65,19 @@ for further explanation and thrown exceptions.
 	available APIs.
 		- The number of threads and the runs per thread can be configured
 		- Further, a path can be specified for choosing PDF files
-	- The `ExampleEventService` starts listening to events that are triggered on the API.
+	- The `ExampleEventService` starts listening to events triggered on the API.
 		- As an example, he requests a `pong`-Event from the API.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 - SDK entities and methods contain JavaDoc annotations.
 
 ### File Transfer
-To keep a constant memory footprint on the Agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode, this leads to unwanted spikes in
+
+To keep a constant memory footprint on the agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode, this leads to unwanted spikes in
 memory usage.
 
 The SDK supports two file transfer types:
-- CLOUDFRONT: The file is uploaded via AWS CloudFront to the ingest S3 bucket. This is generally faster and more stable but might require additional outgoing network permissions.
-- LEGALI: The file is proxied through the legal-i file service. Do not use this in production unless there are network restrictions.
+- CLOUDFRONT: The file is uploaded to the ingest S3 bucket via AWS CloudFront. This is generally faster and more stable but might require additional outgoing network permissions. This mode supports streaming. An application can pass an InputStream to the upload and get an InpuStream from the download method.
+- LEGALI: The file is proxied through the legal-i file service. Do not use this in production unless there are network restrictions. Uploading with this mode reads the whole file into memory. Download uses straming like CLOUDFRONT.
 ```
 legali.fileservice = CLOUDFRONT
 ```
@@ -101,7 +102,7 @@ legali.issuedate        = 2020-01-01
 # set the document title
 legali.title            = Dokumenttitel
 
-# if multiple languages are available, suffix with two letter language key
+# if multiple languages are available, suffix with a two-letter language key
 legali.title_fr         = titre du document
 
 # document language in two-character key. If empty, it's detected
@@ -124,7 +125,7 @@ public void init() {
 }
 ```
 
-After subscribing, the Agent can listen for events by creating event listener methods.
+After subscribing, the agent can listen for events by creating event listener methods.
 Annotate methods with the `@EventListener` annotation and specify the event class as the method parameter.
 
 ```
@@ -154,7 +155,7 @@ Emitted when a user creates a new legal case via the frontend.
 Emitted when a user updates a legal case via the frontend.
 
 `LegalCaseStatusChangedEvent`
-Emitted when a user changes the status of a legal case via the frontend, (OPEN, ARCHIVED).
+Emitted when a user changes the status of a legal case via the frontend (OPEN, ARCHIVED).
 
 `LegalCaseReadyEvent`
 Emitted when all sourcefiles of a legal case are successfully processed.
@@ -208,7 +209,7 @@ legali.api-url=<>
 legali.client-id=<>
 legali.client-secret=<>
 
-# Upload via cloudfront or proxied via API, use cloud front upload whenever possible
+# Upload via CloudFront or proxied via API, use cloud front upload whenever possible
 legali.cloud-front-upload=true
 
 # HTTP connection
@@ -364,4 +365,4 @@ Every user needs to have at least one valid legal-i role to access legal-i. The 
 
 ### Permission groups
 All other groups that contain `*legali*` are used as permission groups.
-A basic user only has access to a legal case if they have at least one matching group.
+A basic user can only access a legal case if they have at least one matching group.
