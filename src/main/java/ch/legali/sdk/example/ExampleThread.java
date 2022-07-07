@@ -92,85 +92,89 @@ public class ExampleThread implements Runnable {
      * Ideally the files are chunked downloaded to a temporary file and then passed to
      * the SDK.
      */
-    try (InputStream fileToUpload = chooseLocalFile()) {
+    Path fileToUpload = chooseLocalFile();
 
-      // add / delete a sourcefile
-      AgentSourceFileDTO sourceFile =
-          AgentSourceFileDTO.builder()
-              .sourceFileUUID(UUID.randomUUID())
-              .legalCaseUUID(legalCase.getLegalCaseUUID())
-              .reference("hello.pdf")
-              .putMetadata("hello", "world")
-              .putMetadata("legali.title", "Sample Document")
-              .putMetadata("legali.dossiertype", this.chooseDossierType())
-              .putMetadata("legali.doctype", this.chooseDocType())
-              .putMetadata("legali.issuedate", "2012-12-12")
-              .build();
+    // add / delete a sourcefile
+    AgentSourceFileDTO sourceFile =
+        AgentSourceFileDTO.builder()
+            .sourceFileUUID(UUID.randomUUID())
+            .legalCaseUUID(legalCase.getLegalCaseUUID())
+            .reference("hello.pdf")
+            .putMetadata("hello", "world")
+            .putMetadata("legali.title", "Sample Document")
+            .putMetadata("legali.dossiertype", this.chooseDossierType())
+            .putMetadata("legali.doctype", this.chooseDocType())
+            .putMetadata("legali.issuedate", "2012-12-12")
+            .build();
 
-      log.info("🧾  Creating SourceFile");
-      this.sourceFileService.create(sourceFile, fileToUpload);
-
-      log.info("😴  Waiting for SourceFile to be processed  (will timeout after 3 seconds!)");
-      // NOTE: use with care, busy waiting and usually not required
-      SourceFileStatus status =
-          this.sourceFileService.waitForSourceFileReadyOrTimeout(
-              sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
-
-      // NOTE: will always time out, if processing is disabled
-      if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
-        log.warn(
-            "💥 legal-i was not fast enough to process this file {}",
-            sourceFile.getSourceFileUUID());
-      }
-
-      // Try to create same sourcefile with another file
-      try {
-        ClassPathResource cp = new ClassPathResource("sample2.pdf");
-        try (InputStream file2 = cp.getInputStream()) {
-          this.sourceFileService.create(sourceFile, file2);
-        } catch (IOException e) {
-          log.error("🙅‍  Failed to open sample2.pdf file", e);
-        }
-      } catch (FileConflictException fileConflictException) {
-        log.info("🙅‍  Sourcefile file are different, refused to do something!‍️");
-      }
-      log.info("🧾  Creating the same SourceFile AGAIN (creates are idempotent)");
-      this.sourceFileService.create(sourceFile, fileToUpload);
-
-      List<AgentSourceFileDTO> list =
-          this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
-      log.info("1️⃣ LegalCase has {} source files", list.size());
-
-      List<AgentExportDTO> exportsList = this.exportService.list(legalCase.getLegalCaseUUID());
-      log.info("1️⃣ LegalCase has {} exports", exportsList.size());
-
-      UUID exportUUID = UUID.randomUUID();
-      try {
-        AgentExportDTO export = this.exportService.get(exportUUID);
-        log.info("1️⃣ LegalCase has export with uuid {}", export.exportUUID());
-      } catch (NotFoundException e) {
-        log.info("1️⃣ LegalCase does not have export with uuid {}", exportUUID);
-      }
-
-      log.info("␡ Deleting SourceFile");
-      this.sourceFileService.delete(sourceFile.getSourceFileUUID());
-
-      list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
-      log.info("😅  LegalCase has {} source files", list.size());
-
-      log.info("🗄  Archiving LegalCase");
-      this.legalCaseService.archive(legalCaseResponse.getLegalCaseUUID());
-
-      log.info("🗑  Deleting LegalCase");
-      this.legalCaseService.delete(legalCaseResponse.getLegalCaseUUID());
-
-      try {
-        this.legalCaseService.get(legalCase.getLegalCaseUUID());
-      } catch (NotFoundException ignored) {
-        log.info("🥳  LegalCase has successfully been deleted, well done!");
-      }
+    log.info("🧾  Creating SourceFile");
+    try (InputStream is = Files.newInputStream(fileToUpload)) {
+      this.sourceFileService.create(sourceFile, is);
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
+    }
+
+    log.info("😴  Waiting for SourceFile to be processed  (will timeout after 3 seconds!)");
+    // NOTE: use with care, busy waiting and usually not required
+    SourceFileStatus status =
+        this.sourceFileService.waitForSourceFileReadyOrTimeout(
+            sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
+
+    // NOTE: will always time out, if processing is disabled
+    if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
+      log.warn(
+          "💥 legal-i was not fast enough to process this file {}", sourceFile.getSourceFileUUID());
+    }
+
+    // Try to create same sourcefile with another file
+    try {
+      ClassPathResource cp = new ClassPathResource("sample2.pdf");
+      try (InputStream file2 = cp.getInputStream()) {
+        this.sourceFileService.create(sourceFile, file2);
+      } catch (IOException e) {
+        log.error("🙅‍  Failed to open sample2.pdf file", e);
+      }
+    } catch (FileConflictException fileConflictException) {
+      log.info("🙅‍  Sourcefile file are different, refused to do something!‍️");
+    }
+    log.info("🧾  Creating the same SourceFile AGAIN (creates are idempotent)");
+    try (InputStream is = Files.newInputStream(fileToUpload)) {
+      this.sourceFileService.create(sourceFile, is);
+    } catch (IOException e) {
+      log.error("🙅‍  Failed to create SourceFile", e);
+    }
+
+    List<AgentSourceFileDTO> list =
+        this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
+    log.info("1️⃣ LegalCase has {} source files", list.size());
+
+    List<AgentExportDTO> exportsList = this.exportService.list(legalCase.getLegalCaseUUID());
+    log.info("1️⃣ LegalCase has {} exports", exportsList.size());
+
+    UUID exportUUID = UUID.randomUUID();
+    try {
+      AgentExportDTO export = this.exportService.get(exportUUID);
+      log.info("1️⃣ LegalCase has export with uuid {}", export.exportUUID());
+    } catch (NotFoundException e) {
+      log.info("1️⃣ LegalCase does not have export with uuid {}", exportUUID);
+    }
+
+    log.info("␡ Deleting SourceFile");
+    this.sourceFileService.delete(sourceFile.getSourceFileUUID());
+
+    list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
+    log.info("😅  LegalCase has {} source files", list.size());
+
+    log.info("🗄  Archiving LegalCase");
+    this.legalCaseService.archive(legalCaseResponse.getLegalCaseUUID());
+
+    log.info("🗑  Deleting LegalCase");
+    this.legalCaseService.delete(legalCaseResponse.getLegalCaseUUID());
+
+    try {
+      this.legalCaseService.get(legalCase.getLegalCaseUUID());
+    } catch (NotFoundException ignored) {
+      log.info("🥳  LegalCase has successfully been deleted, well done!");
     }
   }
 
@@ -190,7 +194,7 @@ public class ExampleThread implements Runnable {
    *
    * @return File
    */
-  private InputStream chooseLocalFile() {
+  private Path chooseLocalFile() {
     // NOTE: if a directory has been specified, the connector loads a random file form
     // there
     try {
@@ -205,17 +209,14 @@ public class ExampleThread implements Runnable {
               "Chosen file {}, {} MB",
               f.getFileName(),
               Math.round((double) Files.size(f) / (1024 * 1024)));
-          return Files.newInputStream(f);
+          return f;
         }
       }
 
       // fall back to sample, if no or invalid path specified
       log.debug("Using sample.pdf");
       ClassPathResource cp = new ClassPathResource("sample.pdf");
-      InputStream file;
-
-      file = cp.getInputStream();
-      return file;
+      return cp.getFile().toPath();
     } catch (IOException e) {
       e.printStackTrace();
       return null;
