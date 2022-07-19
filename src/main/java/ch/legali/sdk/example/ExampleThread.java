@@ -202,15 +202,13 @@ public class ExampleThread implements Runnable {
           && !this.exampleConfig.getFilesPath().isBlank()) {
         List<Path> files =
             Files.list(Paths.get(this.exampleConfig.getFilesPath())).collect(Collectors.toList());
-        if (files != null) {
-          int randomIndex = (int) Math.floor(Math.random() * files.size());
-          Path f = files.get(randomIndex);
-          log.info(
-              "Chosen file {}, {} MB",
-              f.getFileName(),
-              Math.round((double) Files.size(f) / (1024 * 1024)));
-          return f;
-        }
+        int randomIndex = (int) Math.floor(Math.random() * files.size());
+        Path f = files.get(randomIndex);
+        log.info(
+            "Chosen file {}, {} MB",
+            f.getFileName(),
+            Math.round((double) Files.size(f) / (1024 * 1024)));
+        return f;
       }
 
       // fall back to sample, if no or invalid path specified

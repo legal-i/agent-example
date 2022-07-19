@@ -13,7 +13,8 @@
 - Access to legal-i's GitHub repository on https://github.com/legal-i/agent-example
 - Agent credentials to access your environment on the legal-i cloud
 - Recent docker and docker-compose versions installed
-- Internet-Access to `*.legal-i.ch`
+- Internet-Access to `*.legal-i.ch`. If whitelisting is not an option, refer to the subsection [Agent Authorization](#agent-authorization)
+and [API Description](#api-description).
 
 1. Set your legal-i cloud credentials in `quickstart/agent.env`
 2. In the `quickstart`-directory, run `docker-compose build`.
@@ -22,32 +23,18 @@
 5. Check the agent status in the UI (menu in avatar).
 6. In case you need monitoring or proxy support, you can start the corresponding services
 	1. Monitoring: `docker-compose up prometheus grafana`
-		1. Open Grafana at http://localhost:3000/ (admin/admin)
+		1. Open Grafana at http://localhost:3000/ (admin/adminex)
 		2. Add Prometheus data source pointing to http://prometheus:9090/
 		3. Currently, there is no default dashboard defined.
 	2. HTTP Proxy: `docker-compose up squid`
 		1. Adapt `agent.env` to use the proxy
-
-### Monitoring
-
-```
-# Liveness (agent is up)
-http://localhost:8085/actuator/health/liveness
-
-# Readiness (agent can connect to the legal-i cloud)
-http://localhost:8085/actuator/health/readiness
-
-# Prometheus metrics
-http://localhost:8085/actuator/prometheus
-
-```
 
 ## Development
 
 Make sure to set the secrets correctly via environment variables or a properties file:
 
 ```
-LEGALI_API_URL=https://agents.legal-i.ch/api/v1
+LEGALI_API_URL=https://{prefix}-agents.legal-i.ch/api/v1
 LEGALI_AUTH_URL=https://auth.legal-i.ch/
 LEGALI_CLIENT_ID=<>
 LEGALI_CLIENT_SECRET=<>
@@ -61,7 +48,7 @@ for further explanation and thrown exceptions.
 - After the Spring Boot application is initialized, the agent tries to connect to the legal-i endpoints.
 - If the connection can be established, an `HealthService.StartConnectorEvent` Event is published.
 - This has the following effects:
-	- Upon receiving this event, the `ExampleService` runs `ExampleThreads`. Those Example threads call some of the
+	- Upon receiving this event, the `ExampleService` runs `ExampleThread`. The example threads call the
 	available APIs.
 		- The number of threads and the runs per thread can be configured
 		- Further, a path can be specified for choosing PDF files
@@ -70,14 +57,48 @@ for further explanation and thrown exceptions.
 		- This pong will be sent by the API asynchronously and be visible in the EventHandler
 - SDK entities and methods contain JavaDoc annotations.
 
+### Monitoring
+The following endpoints are provided in the Example Agent.
+```
+# Liveness (agent is up)
+http://localhost:8085/actuator/health/liveness
+
+# Readiness (agent can connect to the legal-i cloud)
+http://localhost:8085/actuator/health/readiness
+
+# Prometheus metrics
+http://localhost:8085/actuator/prometheus
+
+```
+
+### Agent Authorization
+- The legal-i SDK authorizes on the legal-i IDP `https://auth.legal-i.ch` using the OAuth 2.0 Client Credentials Grant.
+- The client credentials can be rotated by tenant admins using the legal-i frontend.
+- `https://auth.legal-i.ch/` is independent of the customer's workspacess.
+
+The following outbound endpoints need to be accessible for authenticating the SDK.
+```
+POST https://auth.legal-i.ch/oauth/token
+```
+
+### API Description
+- Agents require outbound access to the environment-specific agent endpoints, normally `https://{prefix}-agents.legal-i.ch`.
+- For a description of the legal-i API and the OpenAPI3 definition, refer to `https://agents.legal-i.ch/api/v1/doc/swagger.html`
+
 ### File Transfer
+The SDK transfers files directly from and to AWS using CLOUDFRONT using pre-signed URLs. Therefore, the following extra
+endpoints must be accessible outbound:
+```
+GET https://api.legal-i.ch/api/v1/store/{any}/{any}/{any} # NOTE: here it needs to be https://api.legal-i.ch
 
-To keep a constant memory footprint on the agent, the SDK uses a FileObject instead of a ByteArrayResource. PDF files can be large if they contain images (> 500MB). In multi-threaded mode, this leads to unwanted spikes in
-memory usage.
+# The files are transfered over these endpoints:
+PUT https://static-temp.legal-i.ch/{any}/{any}`
+GET https://static-export.legal-i.ch/{any}/{any}
+GET https://static-files.legal-i.ch/{any}/{any}
+```
 
-The SDK supports two file transfer types:
-- CLOUDFRONT: The file is uploaded to the ingest S3 bucket via AWS CloudFront. This is generally faster and more stable but might require additional outgoing network permissions. This mode supports streaming. An application can pass an InputStream to the upload and get an InpuStream from the download method.
-- LEGALI: The file is proxied through the legal-i file service. Do not use this in production unless there are network restrictions. Uploading with this mode reads the whole file into memory. Download uses straming like CLOUDFRONT.
+- The file transfer API is subject to change.
+- The `LEGALI` file service is deprecated and only used for development.
 ```
 legali.fileservice = CLOUDFRONT
 ```
@@ -333,36 +354,3 @@ type_profession_ik_statement        : IK-Auszüge
 type_profession_questionnaire       : Arbeitgeberfragebogen
 type_profession_wage_statements     : Lohnabrechnungen
 ```
-
-## IAM Integration
-Users are included with single sign-on. Roles and permissions are managed by group memberships.
-
-
-### Enterprise IDP connections
-See https://auth0.com/docs/connections/enterprise
-
-### Roles and Authorization
-Every user needs to have at least one valid legal-i role to access legal-i. The role is given to the user by assigning him a group with a specific pattern.
-
-- **Tenant Admin**
-- has group that contains `*legali_admin*`
-- has access to...
-	- all legal cases (without permission check)
-	- admin functions and agent panel
-	- can crud legalcases and sourcefiles
-
-
-- **Power User**
-	- has group that contains `*legali_power*`
-	- has access to all legal cases
-	- can crud legalcases and sourcefile
-
-
-- **Basic**
-	- has group that contains `*legali_basic*`
-	- has access to...
-		- cases that he has access (see permission groups)
-
-### Permission groups
-All other groups that contain `*legali*` are used as permission groups.
-A basic user can only access a legal case if they have at least one matching group.
