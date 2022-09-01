@@ -9,4 +9,10 @@
         <notes>False Positive: Python (Flask) issue</notes>
         <cve>CVE-2022-31569</cve>
     </suppress>
+	<suppress>
+		<notes>LEG-4209: Affects undertow-core-2.2.18.Final and
+			undertow-servlet-2.2.18.Final, version 2.2.19Final only fixes one of
+			the two</notes>
+		<cve>CVE-2022-2053</cve>
+	</suppress>	
 </suppressions>

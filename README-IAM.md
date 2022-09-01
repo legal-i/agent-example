@@ -48,12 +48,12 @@ The following roles are defined in legal-i:
 
 **Basic User**
 
-- every basic user needs to have one or more permission groups
+- every basic user needs to have one or more access groups
 - access is limited to legalcases that are have one of his groups specified
 
-### Permission Groups
-All roles or groups that contain the string `*legali*` are treated as permission groups.
-Permission groups are used to model departments in the same organization.  If one of the permission groups of a user matches the permission group assigned to the legalcase, he is authorized to access it.
+### Access Groups
+All roles or groups that contain the string `*legali*` are treated as access groups.
+access groups are used to model departments in the same organization.  If one of the access groups of a user matches the access group assigned to the legalcase, he is authorized to access it.
 
 *Example*
 

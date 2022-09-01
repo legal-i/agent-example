@@ -64,19 +64,19 @@ public class ExampleThread implements Runnable {
     log.info("🗂  Adding LegalCase");
     AgentLegalCaseDTO legalCase =
         AgentLegalCaseDTO.builder()
-            .legalCaseUUID(UUID.randomUUID())
+            .legalCaseId(UUID.randomUUID())
             .firstname("John")
             .lastname("Doe")
             .reference("123-456-789")
             .owner("DummyIamUser")
-            .addGroups("group1")
+            .accessGroup("group1")
             .putMetadata("meta.dummy", "dummy value")
             .build();
     this.legalCaseService.create(legalCase);
 
     // update legal case
     log.info("🤓  Updating LegalCase");
-    AgentLegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.getLegalCaseUUID());
+    AgentLegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.legalCaseId());
     AgentLegalCaseDTO nameChanged =
         AgentLegalCaseDTO.builder()
             .from(legalCaseResponse)
@@ -97,8 +97,8 @@ public class ExampleThread implements Runnable {
     // add / delete a sourcefile
     AgentSourceFileDTO sourceFile =
         AgentSourceFileDTO.builder()
-            .sourceFileUUID(UUID.randomUUID())
-            .legalCaseUUID(legalCase.getLegalCaseUUID())
+            .sourceFileId(UUID.randomUUID())
+            .legalCaseId(legalCase.legalCaseId())
             .reference("hello.pdf")
             .putMetadata("hello", "world")
             .putMetadata("legali.title", "Sample Document")
@@ -118,12 +118,11 @@ public class ExampleThread implements Runnable {
     // NOTE: use with care, busy waiting and usually not required
     SourceFileStatus status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
-            sourceFile.getSourceFileUUID(), TimeUnit.SECONDS.toSeconds(3));
+            sourceFile.sourceFileId(), TimeUnit.SECONDS.toSeconds(3));
 
     // NOTE: will always time out, if processing is disabled
     if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
-      log.warn(
-          "💥 legal-i was not fast enough to process this file {}", sourceFile.getSourceFileUUID());
+      log.warn("💥 legal-i was not fast enough to process this file {}", sourceFile.sourceFileId());
     }
 
     // Try to create same sourcefile with another file
@@ -144,35 +143,34 @@ public class ExampleThread implements Runnable {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
 
-    List<AgentSourceFileDTO> list =
-        this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
+    List<AgentSourceFileDTO> list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} source files", list.size());
 
-    List<AgentExportDTO> exportsList = this.exportService.list(legalCase.getLegalCaseUUID());
+    List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} exports", exportsList.size());
 
     UUID exportUUID = UUID.randomUUID();
     try {
       AgentExportDTO export = this.exportService.get(exportUUID);
-      log.info("1️⃣ LegalCase has export with uuid {}", export.exportUUID());
+      log.info("1️⃣ LegalCase has export with uuid {}", export.exportId());
     } catch (NotFoundException e) {
       log.info("1️⃣ LegalCase does not have export with uuid {}", exportUUID);
     }
 
     log.info("␡ Deleting SourceFile");
-    this.sourceFileService.delete(sourceFile.getSourceFileUUID());
+    this.sourceFileService.delete(sourceFile.sourceFileId());
 
-    list = this.sourceFileService.getByLegalCase(legalCase.getLegalCaseUUID());
+    list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("😅  LegalCase has {} source files", list.size());
 
     log.info("🗄  Archiving LegalCase");
-    this.legalCaseService.archive(legalCaseResponse.getLegalCaseUUID());
+    this.legalCaseService.archive(legalCaseResponse.legalCaseId());
 
     log.info("🗑  Deleting LegalCase");
-    this.legalCaseService.delete(legalCaseResponse.getLegalCaseUUID());
+    this.legalCaseService.delete(legalCaseResponse.legalCaseId());
 
     try {
-      this.legalCaseService.get(legalCase.getLegalCaseUUID());
+      this.legalCaseService.get(legalCase.legalCaseId());
     } catch (NotFoundException ignored) {
       log.info("🥳  LegalCase has successfully been deleted, well done!");
     }
@@ -181,10 +179,9 @@ public class ExampleThread implements Runnable {
   public void cleanup() {
     List<AgentLegalCaseDTO> allCases = this.legalCaseService.list();
     for (AgentLegalCaseDTO currentLegalCase : allCases) {
-      if ("example-agent"
-          .equals(currentLegalCase.getMetadata().getOrDefault("legali.uploader", ""))) {
-        log.info("🧹 Cleaning up {}", currentLegalCase.getLegalCaseUUID());
-        this.legalCaseService.delete(currentLegalCase.getLegalCaseUUID());
+      if ("example-agent".equals(currentLegalCase.metadata().getOrDefault("legali.uploader", ""))) {
+        log.info("🧹 Cleaning up {}", currentLegalCase.legalCaseId());
+        this.legalCaseService.delete(currentLegalCase.legalCaseId());
       }
     }
   }

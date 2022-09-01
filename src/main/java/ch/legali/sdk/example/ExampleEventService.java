@@ -78,7 +78,7 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(PongEvent event) {
-    log.info("🏓 PingPong Event received: " + "\nid " + event.getUuid());
+    log.info("🏓 PingPong Event received: " + "\nid " + event.id());
     this.eventService.acknowledge(event);
   }
 
@@ -88,20 +88,15 @@ public class ExampleEventService {
     log.info(
         "LegalCaseCreatedEvent: "
             + "\n"
-            + event.getLegalCase().getFirstname()
+            + event.legalCase().firstname()
             + " "
-            + event.getLegalCase().getLastname());
+            + event.legalCase().lastname());
     this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(LegalCaseStatusChangedEvent event) {
-    log.info(
-        "LegalCaseStatusChangedEvent: "
-            + "\n"
-            + event.getLegalCaseUuid()
-            + " "
-            + event.getStatus());
+    log.info("LegalCaseStatusChangedEvent: " + "\n" + event.legalCaseId() + " " + event.status());
     this.eventService.acknowledge(event);
   }
 
@@ -110,15 +105,15 @@ public class ExampleEventService {
     log.info(
         "LegalCaseUpdatedEvent: "
             + "\n"
-            + event.getLegalCase().getFirstname()
+            + event.legalCase().firstname()
             + " "
-            + event.getLegalCase().getLastname());
+            + event.legalCase().lastname());
     this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(LegalCaseReadyEvent event) {
-    log.info("LegalCaseReadyEvent: " + "\n" + event.getLegalCaseUuid());
+    log.info("LegalCaseReadyEvent: " + "\n" + event.legalCaseId());
     this.eventService.acknowledge(event);
   }
 
@@ -126,35 +121,35 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(SourceFileCreatedEvent event) {
-    log.info("SourceFileCreatedEvent: " + "\n" + event.getSourceFile().getSourceFileUUID());
+    log.info("SourceFileCreatedEvent: " + "\n" + event.sourceFile().sourceFileId());
     this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(SourceFileUpdatedEvent event) {
-    log.info("SourceFileUpdatedEvent: " + "\n" + event.getField());
+    log.info("SourceFileUpdatedEvent: " + "\n" + event.field());
     this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(SourceFileTaskFailedEvent event) {
-    log.info("SourceFileTaskFailedEvent: " + "\n" + event.getSourceFileUuid());
+    log.info("SourceFileTaskFailedEvent: " + "\n" + event.sourceFileId());
     this.eventService.acknowledge(event);
   }
 
   @EventListener
   public void handle(ExportCreatedEvent event) {
-    log.info("🍻  ExportCreatedEvent: " + event.getExport().exportUUID());
-    log.info("    Recipient : " + event.getExport().recipient());
-    log.info("    Case Id   : " + event.getExport().legalCaseUUID());
-    log.info("    Timestamp : " + event.getTs());
+    log.info("🍻  ExportCreatedEvent: " + event.export().exportId());
+    log.info("    Recipient : " + event.export().recipient());
+    log.info("    Case Id   : " + event.export().legalCaseId());
+    log.info("    Timestamp : " + event.ts());
 
-    try (InputStream is = this.fileService.downloadFile(event.getExport().fileUri())) {
+    try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
       Files.copy(is, Path.of("./dummy.pdf"), StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    log.info("⤵️  Downloaded file: {}", event.getExport().fileUri());
+    log.info("⤵️  Downloaded file: {}", event.export().file().uri());
 
     this.eventService.acknowledge(event);
   }
@@ -163,13 +158,13 @@ public class ExampleEventService {
   public void handle(ExportSharedEvent event) {
     log.info(
         "✉️ ExportSharedEvent: "
-            + event.getExport().exportUUID()
+            + event.export().exportId()
             + "\n"
-            + event.getMethod()
+            + event.method()
             + "\n"
-            + event.getExport().fileUri()
+            + event.export().file().uri()
             + "\n"
-            + event.getEmail());
+            + event.email());
     this.eventService.acknowledge(event);
   }
 
@@ -178,9 +173,9 @@ public class ExampleEventService {
     log.info(
         "📖 ExportViewedEvent: "
             + "\n"
-            + event.getExport().legalCaseUUID()
+            + event.export().legalCaseId()
             + " "
-            + event.getUser().getRemoteAddr());
+            + event.user().remoteAddr());
     this.eventService.acknowledge(event);
   }
 }

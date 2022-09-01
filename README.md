@@ -34,7 +34,7 @@ and [API Description](#api-description).
 Make sure to set the secrets correctly via environment variables or a properties file:
 
 ```
-LEGALI_API_URL=https://{prefix}-agents.legal-i.ch/api/v1
+LEGALI_API_URL=https://{prefix}-agents.legal-i.ch/agents/v1
 LEGALI_AUTH_URL=https://auth.legal-i.ch/
 LEGALI_CLIENT_ID=<>
 LEGALI_CLIENT_SECRET=<>
@@ -83,22 +83,18 @@ POST https://auth.legal-i.ch/oauth/token
 
 ### API Description
 - Agents require outbound access to the environment-specific agent endpoints, normally `https://{prefix}-agents.legal-i.ch`.
-- For a description of the legal-i API and the OpenAPI3 definition, refer to `https://agents.legal-i.ch/api/v1/doc/swagger.html`
+- For a description of the legal-i API and the OpenAPI3 definition, refer to `https://agents.legal-i.ch/doc/swagger.html`
 
 ### File Transfer
 The SDK transfers files directly from and to AWS using CLOUDFRONT using pre-signed URLs. Therefore, the following extra
 endpoints must be accessible outbound:
 ```
-GET https://api.legal-i.ch/api/v1/store/{any}/{any}/{any} # NOTE: here it needs to be https://api.legal-i.ch
-
 # The files are transfered over these endpoints:
-PUT https://static-temp.legal-i.ch/{any}/{any}`
-GET https://static-export.legal-i.ch/{any}/{any}
-GET https://static-files.legal-i.ch/{any}/{any}
+PUT https://upload.legal-i.ch/{any}
+GET https://data.legal-i.ch/{any}
 ```
 
-- The file transfer API is subject to change.
-- The `LEGALI` file service is deprecated and only used for development.
+Note: The `LEGALI` file service is deprecated and only used for development.
 ```
 legali.fileservice = CLOUDFRONT
 ```
@@ -353,4 +349,5 @@ type_profession_employment_contract : Arbeitsverträge
 type_profession_ik_statement        : IK-Auszüge
 type_profession_questionnaire       : Arbeitgeberfragebogen
 type_profession_wage_statements     : Lohnabrechnungen
+type_recourse                       : Regress
 ```
