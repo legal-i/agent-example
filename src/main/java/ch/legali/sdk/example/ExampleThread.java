@@ -99,7 +99,7 @@ public class ExampleThread implements Runnable {
         AgentSourceFileDTO.builder()
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCase.legalCaseId())
-            .reference("hello.pdf")
+            .fileReference("hello.pdf")
             .putMetadata("hello", "world")
             .putMetadata("legali.title", "Sample Document")
             .putMetadata("legali.dossiertype", this.chooseDossierType())
@@ -149,12 +149,12 @@ public class ExampleThread implements Runnable {
     List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} exports", exportsList.size());
 
-    UUID exportUUID = UUID.randomUUID();
+    UUID exportId = UUID.randomUUID();
     try {
-      AgentExportDTO export = this.exportService.get(exportUUID);
+      AgentExportDTO export = this.exportService.get(exportId);
       log.info("1️⃣ LegalCase has export with uuid {}", export.exportId());
     } catch (NotFoundException e) {
-      log.info("1️⃣ LegalCase does not have export with uuid {}", exportUUID);
+      log.info("1️⃣ LegalCase does not have export with uuid {}", exportId);
     }
 
     log.info("␡ Deleting SourceFile");

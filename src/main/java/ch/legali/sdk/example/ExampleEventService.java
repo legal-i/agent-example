@@ -145,7 +145,10 @@ public class ExampleEventService {
     log.info("    Timestamp : " + event.ts());
 
     try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
-      Files.copy(is, Path.of("./dummy.pdf"), StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(
+          is,
+          Path.of("./" + event.export().file().filename()),
+          StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }

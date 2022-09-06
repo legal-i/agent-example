@@ -303,6 +303,13 @@ iv-vs             : IV Wallis
 iv-zg             : IV Zug
 iv-zh             : IV Zürich
 army              : Militärversicherung
+internal_accident : Eigene UVG Akten
+internal_pension  : Eigene BVG Akten
+internal_health_allowances: Eigene KTG Akten
+external_accident : Anderer UVG Versicherer
+external_pension  : Anderer BVG Versicherer
+external_health_allowance: Anderer KTG Versicherer
+external_other    : Andere Drittakten
 ```
 
 ### Document Types
