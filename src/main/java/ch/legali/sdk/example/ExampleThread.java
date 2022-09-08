@@ -99,10 +99,10 @@ public class ExampleThread implements Runnable {
         AgentSourceFileDTO.builder()
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCase.legalCaseId())
+            .folder(chooseFolder())
             .fileReference("hello.pdf")
             .putMetadata("hello", "world")
             .putMetadata("legali.title", "Sample Document")
-            .putMetadata("legali.dossiertype", this.chooseDossierType())
             .putMetadata("legali.doctype", this.chooseDocType())
             .putMetadata("legali.issuedate", "2012-12-12")
             .build();
@@ -225,7 +225,7 @@ public class ExampleThread implements Runnable {
   }
 
   /** @return String random dossier type */
-  private String chooseDossierType() {
+  private String chooseFolder() {
     return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
   }
 }

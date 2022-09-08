@@ -107,9 +107,6 @@ following keys are supported:
 
 ```
 SourceFile
-# set dossier, supported value, see below. defaults to unknown
-legali.dossiertype       = accident
-
 # set doc type, supported values see below
 legali.doctype          = type_medical_report
 
@@ -265,7 +262,7 @@ The agent needs to be allowed to access `*.legal-i.ch` on 443.
 ## References
 
 
-### Dossier Types
+### Folders
 
 ```
 unknown           : Anderes (default)

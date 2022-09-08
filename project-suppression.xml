@@ -10,22 +10,15 @@
         <cve>CVE-2022-31569</cve>
     </suppress>
     <suppress>
-        <notes>LEG-4209: Affects undertow-core-2.2.18.Final and
-            undertow-servlet-2.2.18.Final, version 2.2.19Final only fixes one of
-            the two
-        </notes>
-        <cve>CVE-2022-2053</cve>
-    </suppress>
-    <suppress>
-        <notes>
-            snakeyaml-1.30.jar
-        </notes>
+        <notes>Sneakeyaml 1.30.jar</notes>
         <cve>CVE-2022-25857</cve>
     </suppress>
     <suppress>
-        <notes>
-            xnio-api-3.8.7.Final.jar
-        </notes>
+        <notes>undertow-core-2.2.19.Final.jar and undertow-servlet-2.2.19.Final.jar</notes>
+        <cve>CVE-2022-1259</cve>
+    </suppress>
+    <suppress>
+        <notes>xnio-api-3.8.7.Final.jar</notes>
         <cve>CVE-2022-0084</cve>
     </suppress>
 </suppressions>
