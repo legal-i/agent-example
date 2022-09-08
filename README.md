@@ -178,7 +178,7 @@ Emitted when all sourcefiles of a legal case are successfully processed.
 Emitted when a user creates a source file via the frontend.
 
 `SourceFileUpdatedEvent`
-Emitted when a user changes the Dossier Type (aka Field / Akte) in the frontend
+Emitted when a user changes the folder in the frontend
 
 `SourceFileTaskFailedEvent`
 Emitted by the pipeline when processing of the source file failed.

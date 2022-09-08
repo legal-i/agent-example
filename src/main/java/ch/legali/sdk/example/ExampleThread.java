@@ -224,7 +224,7 @@ public class ExampleThread implements Runnable {
         .get((int) Math.floor(Math.random() * 3));
   }
 
-  /** @return String random dossier type */
+  /** @return String random folder */
   private String chooseFolder() {
     return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
   }
