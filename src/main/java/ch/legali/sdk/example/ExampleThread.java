@@ -4,10 +4,12 @@ import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.exceptions.FileConflictException;
 import ch.legali.sdk.exceptions.NotFoundException;
 import ch.legali.sdk.models.AgentExportDTO;
+import ch.legali.sdk.models.AgentFileDTO;
 import ch.legali.sdk.models.AgentLegalCaseDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
 import ch.legali.sdk.services.ExportService;
+import ch.legali.sdk.services.FileService;
 import ch.legali.sdk.services.LegalCaseService;
 import ch.legali.sdk.services.SourceFileService;
 import java.io.IOException;
@@ -15,6 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -33,16 +39,19 @@ public class ExampleThread implements Runnable {
   private final LegalCaseService legalCaseService;
   private final SourceFileService sourceFileService;
   private final ExportService exportService;
+  private final FileService fileService;
   private final ExampleConfig exampleConfig;
 
   public ExampleThread(
       LegalCaseService legalCaseService,
       SourceFileService sourceFileService,
       ExportService exportService,
+      FileService fileService,
       ExampleConfig exampleConfig) {
     this.legalCaseService = legalCaseService;
     this.sourceFileService = sourceFileService;
     this.exportService = exportService;
+    this.fileService = fileService;
     this.exampleConfig = exampleConfig;
   }
 
@@ -146,6 +155,23 @@ public class ExampleThread implements Runnable {
     List<AgentSourceFileDTO> list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} source files", list.size());
 
+    // download file again and verify md5
+    AgentFileDTO downloadedFile = list.get(0).originalFile();
+    try (InputStream is = this.fileService.downloadFile(downloadedFile.uri())) {
+      Path target = Path.of("./" + downloadedFile.filename());
+      Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
+
+      MessageDigest md = MessageDigest.getInstance("MD5");
+      String md5 = Base64.getEncoder().encodeToString(md.digest(Files.readAllBytes(target)));
+      log.info(
+          "🧮 MD5 of downloaded file is {}",
+          md5.equals(downloadedFile.md5()) ? "correct" : "DIFFERENT!");
+
+      Files.delete(target);
+    } catch (NoSuchAlgorithmException | IOException e) {
+      e.printStackTrace();
+    }
+
     List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} exports", exportsList.size());
 
@@ -218,13 +244,17 @@ public class ExampleThread implements Runnable {
     }
   }
 
-  /** @return String random doc type */
+  /**
+   * @return String random doc type
+   */
   private String chooseDocType() {
     return List.of("type_medical", "type_financial_ik_statement", "type_legal_disposition")
         .get((int) Math.floor(Math.random() * 3));
   }
 
-  /** @return String random folder */
+  /**
+   * @return String random folder
+   */
   private String chooseFolder() {
     return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
   }

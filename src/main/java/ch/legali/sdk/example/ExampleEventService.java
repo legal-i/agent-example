@@ -152,7 +152,7 @@ public class ExampleEventService {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    log.info("⤵️  Downloaded file: {}", event.export().file().uri());
+    log.info("⤵️  Downloaded file: {}", event.export().file().filename());
 
     this.eventService.acknowledge(event);
   }

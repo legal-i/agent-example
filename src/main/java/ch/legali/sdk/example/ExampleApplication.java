@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ExampleApplication {
 
-  @SuppressWarnings("resource")
   public static void main(String[] args) {
     SpringApplication.run(ExampleApplication.class, args);
   }

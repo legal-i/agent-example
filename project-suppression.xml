@@ -6,10 +6,6 @@
         <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
     </suppress>
     <suppress>
-        <notes>False Positive: Python (Flask) issue</notes>
-        <cve>CVE-2022-31569</cve>
-    </suppress>
-    <suppress>
         <notes>Sneakeyaml 1.30.jar</notes>
         <cve>CVE-2022-25857</cve>
     </suppress>
