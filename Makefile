@@ -21,6 +21,11 @@ format:
 lint:
 	@${maven_cmd} -Dmaven.test.skip=true verify
 
+## show dependency and plugin updates
+show-updates:
+	@${maven_cmd} versions:display-dependency-updates
+	@${maven_cmd} versions:display-plugin-updates
+
 ## verify: run verify with tests
 verify:
 	@${maven_cmd} verify

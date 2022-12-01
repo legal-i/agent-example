@@ -6,18 +6,6 @@
         <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
     </suppress>
     <suppress>
-        <notes>Sneakeyaml 1.30.jar</notes>
-        <cve>CVE-2022-25857</cve>
-    </suppress>
-    <suppress>
-        <notes>undertow-core-2.2.19.Final.jar and undertow-servlet-2.2.19.Final.jar</notes>
-        <cve>CVE-2022-1259</cve>
-    </suppress>
-    <suppress>
-        <notes>undertow-core-2.2.19.Final.jar and undertow-servlet-2.2.19.Final.jar</notes>
-        <cve>CVE-2022-1319</cve>
-    </suppress>
-    <suppress>
         <notes>xnio-api-3.8.7.Final.jar</notes>
         <cve>CVE-2022-0084</cve>
     </suppress>
