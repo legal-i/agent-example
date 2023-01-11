@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>ch.legali</groupId>
 	<artifactId>agent-example</artifactId>
-	<version>0.20.0</version>
+	<version>0.20.1</version>
 	<name>Agent Example</name>
 	<description>legal-i Agent Example</description>
 	<properties>
@@ -22,7 +22,7 @@
 		<java.version>11</java.version>
 		<pmd.version>6.50.0</pmd.version>
 		<log4j2.version>2.18.0</log4j2.version>
-		<snakeyaml.version>1.33</snakeyaml.version>		
+		<snakeyaml.version>1.33</snakeyaml.version>
 	</properties>
 	<repositories>
 		<repository>

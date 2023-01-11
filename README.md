@@ -34,7 +34,7 @@ and [API Description](#api-description).
 Make sure to set the secrets correctly via environment variables or a properties file:
 
 ```
-LEGALI_API_URL=https://{prefix}-agents.legal-i.ch/agents/v1
+LEGALI_API_URL=https://{prefix}.agents.legal-i.ch/agents/v1
 LEGALI_AUTH_URL=https://auth.legal-i.ch/
 LEGALI_CLIENT_ID=<>
 LEGALI_CLIENT_SECRET=<>
@@ -82,7 +82,7 @@ POST https://auth.legal-i.ch/oauth/token
 ```
 
 ### API Description
-- Agents require outbound access to the environment-specific agent endpoints, normally `https://{prefix}-agents.legal-i.ch`.
+- Agents require outbound access to the environment-specific agent endpoints, normally `https://{prefix}.agents.legal-i.ch`.
 - For a description of the legal-i API and the OpenAPI3 definition, refer to `https://agents.legal-i.ch/doc/swagger.html`
 
 ### File Transfer

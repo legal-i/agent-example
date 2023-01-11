@@ -47,6 +47,8 @@ public class ExampleEventService {
         LegalCaseCreatedEvent.class,
         LegalCaseStatusChangedEvent.class,
         LegalCaseUpdatedEvent.class,
+        // NotebookUpdatedEvent.class, TODO(ae) SDK issue, see story
+        // https://legal-i.atlassian.net/browse/LEG-4708
 
         // all sourcefiles processed
         LegalCaseReadyEvent.class,
@@ -116,6 +118,14 @@ public class ExampleEventService {
     log.info("LegalCaseReadyEvent: " + "\n" + event.legalCaseId());
     this.eventService.acknowledge(event);
   }
+
+  /* TODO(ae): SDK issue, see story https://legal-i.atlassian.net/browse/LEG-4708
+  @EventListener
+  public void handle(NotebookUpdatedEvent event) {
+    log.info("📓 NotebookUpdatedEvent: " + "\n" + event.notebook());
+    this.eventService.acknowledge(event);
+  }
+  */
 
   // sourcefiles handler
 
