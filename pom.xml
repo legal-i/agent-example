@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>ch.legali</groupId>
 	<artifactId>agent-example</artifactId>
-	<version>0.20.2</version>
+	<version>0.20.3</version>
 	<name>Agent Example</name>
 	<description>legal-i Agent Example</description>
 	<properties>
@@ -119,7 +119,6 @@
 					<failOnViolation>true</failOnViolation>
 					<printFailingErrors>true</printFailingErrors>
 					<linkXRef>false</linkXRef>
-					<sourceEncoding>UTF-8</sourceEncoding>
 					<targetJdk>${java.version}</targetJdk>
 					<excludeFromFailureFile>pmd_ignore.properties</excludeFromFailureFile>
 					<excludeRoots>

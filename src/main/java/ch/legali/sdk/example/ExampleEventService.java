@@ -137,7 +137,7 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(SourceFileUpdatedEvent event) {
-    log.info("SourceFileUpdatedEvent: " + "\n" + event.folder());
+    log.info("SourceFileUpdatedEvent: " + "\n" + event.sourceFile().folder());
     this.eventService.acknowledge(event);
   }
 
