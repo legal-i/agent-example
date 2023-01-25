@@ -1,7 +1,7 @@
-# File Upload and Download via Cloudfront
-The legal-i SDK uses presigned URLs to upload and download files directly to AWS.
+# File Transfer API
+The legal-i SDK uses presigned URLs to upload and download files directly to AWS for efficiency and stability.
 
-##  File Download
+## Flow for File Download
 **The SDK requests a presigned URL from the legal-i files API. HTTP 307 with the presigned URL in the location header is returned.**
 
 ```
@@ -61,7 +61,7 @@ RESPONSE HEADERS:
 
 ```
 
-## File Upload
+## Flow for File Upload
 
 **SDK PUTs the binary to the presigned URL pointing to CloudFront, located at https://upload.legal-i.ch**
 ```

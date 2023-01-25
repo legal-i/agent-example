@@ -7,6 +7,7 @@ import ch.legali.api.events.LegalCaseCreatedEvent;
 import ch.legali.api.events.LegalCaseReadyEvent;
 import ch.legali.api.events.LegalCaseStatusChangedEvent;
 import ch.legali.api.events.LegalCaseUpdatedEvent;
+import ch.legali.api.events.NotebookUpdatedEvent;
 import ch.legali.api.events.PongEvent;
 import ch.legali.api.events.SourceFileCreatedEvent;
 import ch.legali.api.events.SourceFileTaskFailedEvent;
@@ -47,8 +48,7 @@ public class ExampleEventService {
         LegalCaseCreatedEvent.class,
         LegalCaseStatusChangedEvent.class,
         LegalCaseUpdatedEvent.class,
-        // NotebookUpdatedEvent.class, TODO(ae) SDK issue, see story
-        // https://legal-i.atlassian.net/browse/LEG-4708
+        NotebookUpdatedEvent.class,
 
         // all sourcefiles processed
         LegalCaseReadyEvent.class,
@@ -119,13 +119,11 @@ public class ExampleEventService {
     this.eventService.acknowledge(event);
   }
 
-  /* TODO(ae): SDK issue, see story https://legal-i.atlassian.net/browse/LEG-4708
   @EventListener
   public void handle(NotebookUpdatedEvent event) {
     log.info("📓 NotebookUpdatedEvent: " + "\n" + event.notebook());
     this.eventService.acknowledge(event);
   }
-  */
 
   // sourcefiles handler
 

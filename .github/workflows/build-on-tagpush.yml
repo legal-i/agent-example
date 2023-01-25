@@ -32,6 +32,8 @@ jobs:
           artifacts: 'sdk-release.zip'
           tag: ${{ steps.get_version.outputs.VERSION }}
           name: Release ${{ steps.get_version.outputs.VERSION }}
+          draft: true
+          bodyFile: release_template.md
           allowUpdates: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}

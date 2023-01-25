@@ -77,7 +77,10 @@ public class ExampleThread implements Runnable {
             .firstname("John")
             .lastname("Doe")
             .reference("123-456-789")
+            // Pass the UserID from SSO
             .owner("DummyIamUser")
+            // or pass the user's e-mail
+            // .ownerEmail("dummy@user.com")
             .accessGroup("group1")
             .putMetadata("meta.dummy", "dummy value")
             .build();
