@@ -7,6 +7,7 @@ import ch.legali.sdk.models.AgentExportDTO;
 import ch.legali.sdk.models.AgentFileDTO;
 import ch.legali.sdk.models.AgentLegalCaseDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO;
+import ch.legali.sdk.models.AgentSourceFileDTO.MetadataKeys;
 import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
 import ch.legali.sdk.services.ExportService;
 import ch.legali.sdk.services.FileService;
@@ -114,9 +115,13 @@ public class ExampleThread implements Runnable {
             .folder(chooseFolder())
             .fileReference("hello.pdf")
             .putMetadata("hello", "world")
-            .putMetadata("legali.title", "Sample Document")
-            .putMetadata("legali.doctype", this.chooseDocType())
-            .putMetadata("legali.issuedate", "2012-12-12")
+            // To pass metadata properties, you can use strings..
+            .putMetadata("legali.metadata.title", "Sample Document")
+            .putMetadata("legali.metadata.doctype", this.chooseDocType())
+            // or the enums keys
+            .putMetadata(MetadataKeys.LEGALI_METADATA_ISSUEDATE.key(), "2012-12-12")
+            // for boolean value, pass "true" or "false" as strings
+            .putMetadata(MetadataKeys.LEGALI_PIPELINE_SPLITTING_DISABLED.key(), "true")
             .build();
 
     log.info("🧾  Creating SourceFile");
@@ -251,7 +256,7 @@ public class ExampleThread implements Runnable {
    * @return String random doc type
    */
   private String chooseDocType() {
-    return List.of("type_medical", "type_financial_ik_statement", "type_legal_disposition")
+    return List.of("type_medical", "type_profession_ik_statement", "type_legal_disposal")
         .get((int) Math.floor(Math.random() * 3));
   }
 

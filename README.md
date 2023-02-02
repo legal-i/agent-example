@@ -152,18 +152,26 @@ type `string` / `string`. Defaults can be set in the application config or via e
 This metadata is also used to override legal-i's processing pipeline on single documents:
 
 ```
-SourceFile
-# overrides the document type, supported values see below
-legali.doctype          = type_medical_report
+
+# override the extracted title for this sourcefile. if multiple documents are detected, it is used for all of them
+legali.metadata.title      			= "Dokumenttitel" 		# Value: String containing the title
+
+# override the detected document type / label
+legali.metadata.doctype    			= "type_medical_report" # Value: one of the document types as string ('type_*')
 
 # overrides the issue date
-legali.issuedate        = 2020-01-01
+legali.metadata.issuedate    		= "2020-01-01" 			# Value: Date in YYYY-MM-DD as string
 
-# overrides the document title
-legali.title            = Dokumenttitel
+# disables splitting of this sourcefile into documents
+legali.pipeline.splitting.disabled = "true"  				# Value: "true" or "false", passed as String
 
-# Disables processing for this file (to test APIs and integration)
-legali.pipeline.disabled = true
+# the customer's internal document type, will be used for the upcoming mapping feature
+legali.mapping.key  				= "InternerDokTyp128" 	# String
+
+# DEBUG
+
+# Disables the entire processing pipeline for this file (to test APIs)
+legali.pipeline.disabled 			= "true"  				# Value: "true" or "false", passed as string
 
 ```
 
