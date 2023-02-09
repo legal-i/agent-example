@@ -122,6 +122,8 @@ public class ExampleThread implements Runnable {
             .putMetadata(MetadataKeys.LEGALI_METADATA_ISSUEDATE.key(), "2012-12-12")
             // for boolean value, pass "true" or "false" as strings
             .putMetadata(MetadataKeys.LEGALI_PIPELINE_SPLITTING_DISABLED.key(), "true")
+            // if a property is set to an empty string, it is ignored and the default is used
+            .putMetadata("legali.metadata.some-property", "")
             .build();
 
     log.info("🧾  Creating SourceFile");

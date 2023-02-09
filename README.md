@@ -146,32 +146,35 @@ For detailed information about Entities and Events refer to JavaDoc or Swagger (
 
 ### Entity Metadata
 
-`LegalCase` and `SourceFiles` Entities contain a metadata field to add integration-specific key-value store, with
+The `LegalCase` and `SourceFiles` entities contain a metadata field to add integration-specific key-value store, with
 type `string` / `string`. Defaults can be set in the application config or via environment variables.
 
-This metadata is also used to override legal-i's processing pipeline on single documents:
+Those property can be used to store arbitrary data, e.g. internal IDs. Further, this metadata is also used to override legal-i's processing pipeline the given source file.
+
+Empty properties are considered as
 
 ```
 
-# override the extracted title for this sourcefile. if multiple documents are detected, it is used for all of them
-legali.metadata.title      			= "Dokumenttitel" 		# Value: String containing the title
+# override the extracted title for this source file. if multiple documents are detected, it is used for all of them
+legali.metadata.title = "Dokumenttitel" # value: string containing the title. default extracted value
+
 
 # override the detected document type / label
-legali.metadata.doctype    			= "type_medical_report" # Value: one of the document types as string ('type_*')
+legali.metadata.doctype = "type_medical_report" # value: one of the document types as string ('type_*'). default detected value
 
 # overrides the issue date
-legali.metadata.issuedate    		= "2020-01-01" 			# Value: Date in YYYY-MM-DD as string
+legali.metadata.issuedate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
 
-# disables splitting of this sourcefile into documents
-legali.pipeline.splitting.disabled = "true"  				# Value: "true" or "false", passed as String
+# disables splitting of this source file into documents
+legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
 
 # the customer's internal document type, will be used for the upcoming mapping feature
-legali.mapping.key  				= "InternerDokTyp128" 	# String
+legali.mapping.key = "InternerDokTyp128" # value as string
 
 # DEBUG
 
 # Disables the entire processing pipeline for this file (to test APIs)
-legali.pipeline.disabled 			= "true"  				# Value: "true" or "false", passed as string
+legali.pipeline.disabled = "true" # value: "true" or "false", passed as string. default false
 
 ```
 
@@ -225,7 +228,10 @@ Emitted when a user creates a source file via the frontend.
 `SourceFileUpdatedEvent`
 Emitted when a user changes the folder in the frontend
 
-`SourceFileTaskFailedEvent`
+`SourceFileReadyEvent`
+Emitted when the pipeline is done processing a source file.
+
+`SourceFileFailedEvent`
 Emitted by the pipeline when processing of the source file failed.
 
 `ExportCreatedEvent`

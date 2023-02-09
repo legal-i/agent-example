@@ -10,7 +10,8 @@ import ch.legali.api.events.LegalCaseUpdatedEvent;
 import ch.legali.api.events.NotebookUpdatedEvent;
 import ch.legali.api.events.PongEvent;
 import ch.legali.api.events.SourceFileCreatedEvent;
-import ch.legali.api.events.SourceFileTaskFailedEvent;
+import ch.legali.api.events.SourceFileFailedEvent;
+import ch.legali.api.events.SourceFileReadyEvent;
 import ch.legali.api.events.SourceFileUpdatedEvent;
 import ch.legali.sdk.internal.HealthService;
 import ch.legali.sdk.services.EventService;
@@ -56,9 +57,10 @@ public class ExampleEventService {
         // sourcefiles CRUD through frontend
         SourceFileCreatedEvent.class,
         SourceFileUpdatedEvent.class,
+        SourceFileReadyEvent.class,
 
         // processing error
-        SourceFileTaskFailedEvent.class,
+        SourceFileFailedEvent.class,
 
         // export
         ExportCreatedEvent.class,
@@ -140,8 +142,14 @@ public class ExampleEventService {
   }
 
   @EventListener
-  public void handle(SourceFileTaskFailedEvent event) {
-    log.info("SourceFileTaskFailedEvent: " + "\n" + event.sourceFileId());
+  public void handle(SourceFileReadyEvent event) {
+    log.info("SourceFileReadyEvent: " + "\n" + event.sourceFileId());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(SourceFileFailedEvent event) {
+    log.info("SourceFileFailedEvent: " + "\n" + event.sourceFileId());
     this.eventService.acknowledge(event);
   }
 
