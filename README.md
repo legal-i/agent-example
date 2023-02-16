@@ -358,6 +358,7 @@ iv-li                          : IV Liechtenstein
 
 ```
 type_admin    						: Admin
+type_admin_auto                     : Admin (auto-recognize subtype if possible)
 type_admin_claim_report_uvg         : Schaden- / Krankheitsmeldungen
 type_admin_iv_registration          : IV Anmeldungen
 type_admin_facts_sheet              : Feststellungsblätter
@@ -365,20 +366,23 @@ type_admin_table_of_content         : Inhaltsverzeichnisse
 type_admin_protocol                 : Protokolle
 
 type_correspondence                 : Korrespondenz
+type_correspondence_auto            : Korrespondenz (auto-recognize subtype if possible)
 type_correspondence_external_emails : Externe Emails
 type_correspondence_internal_emails : Interne Emails
 type_correspondence_letters         : Briefe
 
 type_medical                        : Medizinisch
+type_medical_auto                   : Medizinisch (auto-recognize subtype if possible)
 type_medical_certificate            : AUF-Zeugnisse
 type_medical_report                 : Arztberichte
 type_medical_insurance_report       : Vers. interne Arztberichte
 type_medical_prescription           : Med. Verordnungen
 type_medical_cost_credit            : Kostengutsprachen
 type_medical_expert_opinion         : Gutachten
-type_medical_form         			: Formular
+type_medical_form                   : Formular
 
 type_legal                          : Rechtlich
+type_legal_auto                     : Rechtlich (auto-recognize subtype if possible)
 type_legal_pre_disposal             : Vorbescheide / Formlose Ablehnungen
 type_legal_disposal                 : Verfügungen
 type_legal_objection                : Einsprachen
@@ -390,6 +394,7 @@ type_legal_submissions_court        : Eingaben Gerichtsverfahren
 type_legal_criminal_file            : Strafakten
 
 type_profession                     : Berufliches
+type_profession_auto                : Berufliches (auto-recognize subtype if possible)
 type_profession_ik_statement        : IK-Auszüge
 type_profession_cv                  : Lebensläufe
 type_profession_employment_contract : Arbeitsverträge
@@ -397,6 +402,7 @@ type_profession_questionnaire       : Arbeitgeberfragebogen
 type_profession_wage_statements     : Lohnabrechnungen
 
 type_financial                      : Finanziell
+type_financial_auto                 : Finanziell (auto-recognize subtype if possible)
 type_financial_allowance_overview   : Taggeld-Abrechnungen
 type_financial_invoice              : Rechnungen
 
