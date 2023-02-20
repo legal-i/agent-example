@@ -165,6 +165,9 @@ legali.metadata.doctype = "type_medical_report" # value: one of the document typ
 # overrides the issue date
 legali.metadata.issuedate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
 
+# sets the receiptdate
+legali.metadata.receiptdate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
+
 # disables splitting of this source file into documents
 legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
 
@@ -308,6 +311,7 @@ management.endpoint.health.group.readiness.include=readinessState,agent
 
 ```
 unknown                        : Anderes
+migration_file                 : Migrationsdossier
 internal_accident              : Eigene UVG Akten
 internal_pension               : Eigene BVG Akten
 internal_health_allowances     : Eigene KTG Akten
@@ -357,7 +361,7 @@ iv-li                          : IV Liechtenstein
 ### Document Types (Dokumenttypen / Labels)
 
 ```
-type_admin    						: Admin
+type_admin                          : Admin
 type_admin_auto                     : Admin (auto-recognize subtype if possible)
 type_admin_claim_report_uvg         : Schaden- / Krankheitsmeldungen
 type_admin_iv_registration          : IV Anmeldungen
@@ -413,7 +417,6 @@ type_internal_reports               : Interne Berichte
 
 type_recourse                       : Regress
 
-type_other                          : Andere / Übriges
 type_other_phone_memo               : Telefon- / Aktennotizen
 
 ```
