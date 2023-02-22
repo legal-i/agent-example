@@ -151,34 +151,41 @@ type `string` / `string`. Defaults can be set in the application config or via e
 
 Those property can be used to store arbitrary data, e.g. internal IDs. Further, this metadata is also used to override legal-i's processing pipeline the given source file.
 
-Empty properties are considered as
+Empty properties are considered as not set.
 
+Override legal-i detected title and issuedate with these properties:
 ```
-
 # override the extracted title for this source file. if multiple documents are detected, it is used for all of them
 legali.metadata.title = "Dokumenttitel" # value: string containing the title. default extracted value
 
+# overrides the issue date
+legali.metadata.issuedate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
+```
 
+Either override the legal-i detected doctype and enable/disable splitting with the following two properties
+```
 # override the detected document type / label
 legali.metadata.doctype = "type_medical_report" # value: one of the document types as string ('type_*'). default detected value
 
-# overrides the issue date
-legali.metadata.issuedate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
+# disables splitting of this source file into documents
+legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
+```
 
+or send a mapping key and/or receiptdate. 
+```
 # sets the receiptdate
 legali.metadata.receiptdate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
 
-# disables splitting of this source file into documents
-legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
-
 # the customer's internal document type, will be used for the upcoming mapping feature
-legali.mapping.key = "InternerDokTyp128" # value as string
+legali.mapping.key = "1970" # value as string
+```
+For the value of `legali.mapping.key` an entry in the legal-i mapping table must exist.
+If there is no mapping for the given key it will be ignored.
 
-# DEBUG
 
-# Disables the entire processing pipeline for this file (to test APIs)
+Additionally you can disable the entire processing pipeline for this file (to test APIs)
+```
 legali.pipeline.disabled = "true" # value: "true" or "false", passed as string. default false
-
 ```
 
 &nbsp;
