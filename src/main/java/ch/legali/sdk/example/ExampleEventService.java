@@ -13,6 +13,8 @@ import ch.legali.api.events.SourceFileCreatedEvent;
 import ch.legali.api.events.SourceFileFailedEvent;
 import ch.legali.api.events.SourceFileReadyEvent;
 import ch.legali.api.events.SourceFileUpdatedEvent;
+import ch.legali.api.events.ThreadClosedEvent;
+import ch.legali.api.events.ThreadCreatedEvent;
 import ch.legali.sdk.internal.HealthService;
 import ch.legali.sdk.services.EventService;
 import ch.legali.sdk.services.FileService;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +68,11 @@ public class ExampleEventService {
         // export
         ExportCreatedEvent.class,
         ExportSharedEvent.class,
-        ExportViewedEvent.class);
+        ExportViewedEvent.class,
+
+        // messaging
+        ThreadCreatedEvent.class,
+        ThreadClosedEvent.class);
   }
 
   /** On connector start, ping the API to request a pong event */
@@ -195,6 +202,27 @@ public class ExampleEventService {
             + event.export().legalCaseId()
             + " "
             + event.user().remoteAddr());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(ThreadCreatedEvent event) {
+    log.info("🧵 ThreadCreatedEvent: " + "\n" + "Subject: " + event.subject());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(ThreadClosedEvent event) {
+    log.info(
+        "🧵 ThreadClosedEvent: "
+            + "\n"
+            + "Subject: "
+            + event.subject()
+            + "\n"
+            + "LINK(S)"
+            + "\n"
+            + event.documents().stream().collect(Collectors.joining("\n")));
+
     this.eventService.acknowledge(event);
   }
 }

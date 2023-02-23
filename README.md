@@ -256,6 +256,11 @@ Emitted when an external user opens/downloads an exported pdf.
 `NotebookUpdatedEvent`
 Emitted when a user updates the legal case notebook.
 
+`ThreadCreatedEvent`
+Emitted when a new message thread is created.
+
+`ThreadClosedEvent`
+Emitted when a message thread is closed.
 
 ## References
 ### Configuration and Deployment
