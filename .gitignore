@@ -40,3 +40,4 @@ example/data/squid_logs/*
 
 #pdfs
 pdfs/*.pdf
+temp/*.pdf

@@ -142,7 +142,7 @@ For details, refer to `README-FILES.md`.
 
 ## Entities and Events
 
-For detailed information about Entities and Events refer to JavaDoc or Swagger (https://agents.legal-i.ch/doc/swagger.html)
+For detailed information about Entities and Events refer to Swagger (https://agents.legal-i.ch/doc/swagger-ui/index.html)
 
 ### Entity Metadata
 
@@ -171,7 +171,7 @@ legali.metadata.doctype = "type_medical_report" # value: one of the document typ
 legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
 ```
 
-or send a mapping key and/or receiptdate. 
+or send a mapping key and/or receiptdate.
 ```
 # sets the receiptdate
 legali.metadata.receiptdate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
@@ -194,73 +194,7 @@ legali.pipeline.disabled = "true" # value: "true" or "false", passed as string. 
 ### Events
 
 The agent must subscribe to the events it wants to receive. Events are retained for 3 days.
-
-```
-@PostConstruct
-public void init() {
-	this.eventService.subscribe(PongEvent.class, ExportPublishedEvent.class);
-}
-```
-
-After subscribing, the Agent listens to events using eating event listeners. Every event listener must acknowledge its events. Events that are not acknowledged are sent again after 5 minutes.
-
-```
-@EventListener
-public void handle(PongEvent event) {
-	log.info("🏓 PingPong Event received: " + "\nid " + event.getUuid());
-
-	// Acknowledge
-	this.eventService.acknowledge(event)
-}
-```
-
-*Events:*
-
-`PongEvent`
-Emitted after a PongRequest is requested for debugging.
-Request with `this.eventClient.ping();`
-
-`LegalCaseCreatedEvent`
-Emitted when a user creates a new legal case via the frontend.
-
-`LegalCaseUpdatedEvent`
-Emitted when a user updates a legal case via the frontend.
-
-`LegalCaseStatusChangedEvent`
-Emitted when a user changes the status of a legal case via the frontend (OPEN, ARCHIVED).
-
-`LegalCaseReadyEvent`
-Emitted when all source files of a legal case are successfully processed.
-
-`SourceFileCreatedEvent`.
-Emitted when a user creates a source file via the frontend.
-
-`SourceFileUpdatedEvent`
-Emitted when a user changes the folder in the frontend
-
-`SourceFileReadyEvent`
-Emitted when the pipeline is done processing a source file.
-
-`SourceFileFailedEvent`
-Emitted by the pipeline when processing of the source file failed.
-
-`ExportCreatedEvent`
-Emitted when a user creates a new export through the frontend.
-
-`ExportSharedEvent`
-Emitted when a user publishes a new export with a link or an email.
-
-`ExportViewedEvent`
-Emitted when an external user opens/downloads an exported pdf.
-
-`NotebookUpdatedEvent`
-Emitted when a user updates the legal case notebook.
-
-`ThreadCreatedEvent`
-Emitted when a new message thread is created.
-
-`ThreadClosedEvent`
-Emitted when a message thread is closed.
+A list of all events can be found on swagger https://agents.legal-i.ch/doc/swagger-ui/index.html
 
 ## References
 ### Configuration and Deployment

@@ -12,17 +12,17 @@
     <suppress>
         <notes>snakeyaml-1.33.jar</notes>
         <cve>CVE-2022-1471</cve>
-        <cve>CVE-2022-3064</cve>
-        <cve>CVE-2021-4235</cve>
     </suppress>
     <suppress>
         <notes>commons-logging-1.2.jar</notes>
         <cve>CVE-2021-37533</cve>
     </suppress>
     <suppress>
-        <notes>undertow-core-2.2.20.Final.jar</notes>
-        <cve>CVE-2021-37533</cve>
-        <cve>CVE-2016-6311</cve>
-        <cve>CVE-2022-2764</cve>
+        <notes>undertow-core-2.2.22.Final.jar</notes>
+        <cve>CVE-2022-4492</cve>
+    </suppress>
+    <suppress>
+        <notes>jackson-core-2.13.4.jar</notes>
+        <cve>CVE-2022-45688</cve>
     </suppress>
 </suppressions>

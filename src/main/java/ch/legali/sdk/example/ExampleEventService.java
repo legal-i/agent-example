@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -168,9 +169,10 @@ public class ExampleEventService {
     log.info("    Timestamp : " + event.ts());
 
     try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
+      Files.createDirectories(Paths.get("./temp"));
       Files.copy(
           is,
-          Path.of("./" + event.export().file().filename()),
+          Path.of("./temp/" + event.export().file().filename()),
           StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
@@ -219,9 +221,11 @@ public class ExampleEventService {
             + "Subject: "
             + event.subject()
             + "\n"
-            + "LINK(S)"
-            + "\n"
-            + event.documents().stream().collect(Collectors.joining("\n")));
+            + (event.attachments().size() > 0
+                ? "Message attachment URI(s):"
+                    + "\n"
+                    + event.attachments().stream().collect(Collectors.joining("\n"))
+                : ""));
 
     this.eventService.acknowledge(event);
   }
