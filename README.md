@@ -106,7 +106,7 @@ http://localhost:8085/actuator/prometheus
 
 &nbsp;
 ## Protocols and Firewall
-- The legal-i SDK communicates via HTTPS/TLS1.2 to REST endpoints
+- The legal-i SDK communicates via HTTPS/TLS1.4 to REST endpoints
 - Outbound access is required to
 	- the environment-specific agent endpoints, i.e., `https://{customer-prefix}.agents.legal-i.ch`
 		- For OpenAPI3 specs refer to `https://agents.legal-i.ch/doc/swagger.html`
@@ -140,53 +140,58 @@ For details, refer to `README-FILES.md`.
 &nbsp;
 &nbsp;
 
-## Entities and Events
+## Entities, Events and Mapping
 
 For detailed information about Entities and Events refer to Swagger (https://agents.legal-i.ch/doc/swagger-ui/index.html)
 
 ### Entity Metadata
 
-The `LegalCase` and `SourceFiles` entities contain a metadata field to add integration-specific key-value store, with
+The `LegalCase` and `SourceFile` entities contain a metadata field to add integration-specific key-value pairs, with
 type `string` / `string`. Defaults can be set in the application config or via environment variables.
 
-Those property can be used to store arbitrary data, e.g. internal IDs. Further, this metadata is also used to override legal-i's processing pipeline the given source file.
+Those properties are used to store arbitrary data, e.g. internal IDs. Further, this metadata is also used to override legal-i's processing pipeline the given source file. Empty strings in properties are considered as not set.
 
-Empty properties are considered as not set.
-
-Override legal-i detected title and issuedate with these properties:
+### Override legal-i's processing pipeline
+A customer might have predefined document types that should not be processed by legal-i's extraction and classification pipeline. In this case, a mapping key is passed upon creation of the sourcefile.
 ```
-# override the extracted title for this source file. if multiple documents are detected, it is used for all of them
-legali.metadata.title = "Dokumenttitel" # value: string containing the title. default extracted value
+legali.mapping.key = "a5bf"
+```
+legal-i checks the mapping configuration for a corresponding entry. If such entry has been configured in the legal-i app, the defined rules for the document's folder, label, whether it is split and which issue date is chosen are applied.
+
+Further, the following properties can be used to override processing. If those properties are not set or empty, the data extracted by legal-i is used.
+```
+# override the extracted document title
+legali.metadata.title = "Dokumenttitel"
 
 # overrides the issue date
-legali.metadata.issuedate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
+legali.metadata.issuedate = "2020-01-22" (NOTE: YYYY-MM-DD)
+
+# sets a receipt date on the document
+legali.metadata.receiptdate = "2020-01-01" (NOTE: YYYY-MM-DD)
+
+# For debugging: the pipeline can be disabled entirely
+legali.pipeline.disabled = "true"
 ```
 
-Either override the legal-i detected doctype and enable/disable splitting with the following two properties
+The following properties can also be sent directly on the SourceFile. This approach is deprecated and shall not be used in future integrations.
 ```
 # override the detected document type / label
-legali.metadata.doctype = "type_medical_report" # value: one of the document types as string ('type_*'). default detected value
+legali.metadata.doctype = "type_medical_report"
 
-# disables splitting of this source file into documents
-legali.pipeline.splitting.disabled = "true" # value: "true" or "false", passed as string. default: false
+# disables splitting of the source file into documents
+legali.pipeline.splitting.disabled = "true"
 ```
 
-or send a mapping key and/or receiptdate.
-```
-# sets the receiptdate
-legali.metadata.receiptdate = "2020-01-01" # value: date in YYYY-MM-DD as string. default: extracted value
 
-# the customer's internal document type, will be used for the upcoming mapping feature
-legali.mapping.key = "1970" # value as string
-```
-For the value of `legali.mapping.key` an entry in the legal-i mapping table must exist.
-If there is no mapping for the given key it will be ignored.
+### Example for setting up Document Type classifications
+Document Type / Labels:
+- if you want legal-i to classify the type, *do not send this property* or send an *empty string* as value
+- if you know the exact document type, pass it, e.g. `type_medical_report`.
+- if you know the parent type and you want legal-i to classify the subtype, pass `type_parent_auto`. E.g., `type_medical_auto` will limit the classification to all medical subtypes.
+- if you don’t know the exact type and you *do not want legal-i to classify the document*, pass `type_other`
 
+This behaviour can also be configured in the mapping configuration in the legal-i app.
 
-Additionally you can disable the entire processing pipeline for this file (to test APIs)
-```
-legali.pipeline.disabled = "true" # value: "true" or "false", passed as string. default false
-```
 
 &nbsp;
 &nbsp;
@@ -274,6 +279,7 @@ vvg                            : VVG
 accident                       : Unfall
 suva                           : Unfall (SUVA)
 
+iv							   : IV Allgemein
 iv-ag                          : IV Aargau
 iv-ai                          : IV Appenzell Innerrhoden
 iv-ar                          : IV Appenzell Ausserrhoden
@@ -300,8 +306,8 @@ iv-vd                          : IV Waadt
 iv-vs                          : IV Wallis
 iv-zg                          : IV Zug
 iv-zh                          : IV Zürich
-
 iv-li                          : IV Liechtenstein
+
 ```
 
 ### Document Types (Dokumenttypen / Labels)
@@ -350,6 +356,8 @@ type_profession_cv                  : Lebensläufe
 type_profession_employment_contract : Arbeitsverträge
 type_profession_questionnaire       : Arbeitgeberfragebogen
 type_profession_wage_statements     : Lohnabrechnungen
+type_profession_reference			: Arbeitszeugnisse / Diplome
+type_profession_integration			: Eingliederung
 
 type_financial                      : Finanziell
 type_financial_auto                 : Finanziell (auto-recognize subtype if possible)
@@ -363,6 +371,7 @@ type_internal_reports               : Interne Berichte
 
 type_recourse                       : Regress
 
+type_other                          : Andere / Übriges (Disables legal-i's classification)
 type_other_phone_memo               : Telefon- / Aktennotizen
 
 ```

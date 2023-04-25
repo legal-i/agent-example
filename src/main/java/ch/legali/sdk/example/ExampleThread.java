@@ -3,6 +3,7 @@ package ch.legali.sdk.example;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.exceptions.FileConflictException;
 import ch.legali.sdk.exceptions.NotFoundException;
+import ch.legali.sdk.exceptions.PreconditionFailedException;
 import ch.legali.sdk.models.AgentExportDTO;
 import ch.legali.sdk.models.AgentFileDTO;
 import ch.legali.sdk.models.AgentLegalCaseDTO;
@@ -43,17 +44,23 @@ public class ExampleThread implements Runnable {
   private final FileService fileService;
   private final ExampleConfig exampleConfig;
 
+  private final ExampleAgentMetadataThread exampleAgentMetadataThread;
+
   public ExampleThread(
       LegalCaseService legalCaseService,
       SourceFileService sourceFileService,
       ExportService exportService,
       FileService fileService,
+      ExampleAgentMetadataThread exampleAgentMetadataThread,
       ExampleConfig exampleConfig) {
     this.legalCaseService = legalCaseService;
     this.sourceFileService = sourceFileService;
     this.exportService = exportService;
     this.fileService = fileService;
     this.exampleConfig = exampleConfig;
+
+    // used to test metadata, see below
+    this.exampleAgentMetadataThread = exampleAgentMetadataThread;
   }
 
   @Override
@@ -63,6 +70,10 @@ public class ExampleThread implements Runnable {
       log.info("🚀  Starting run {}", i);
       this.runExample();
     }
+
+    // Uncomment to also run the example of the ExampleAgentMetadataThread
+    // See ExampleAgentMetadataThread before uncommenting for further instructions
+    // this.exampleAgentMetadataThreadBean.run();
   }
 
   /**
@@ -114,14 +125,22 @@ public class ExampleThread implements Runnable {
             .legalCaseId(legalCase.legalCaseId())
             .folder(chooseFolder())
             .fileReference("hello.pdf")
-            .putMetadata("hello", "world")
-            // To pass metadata properties, you can use strings..
+
+            // To pass metadata properties, you can use strings...
             .putMetadata("legali.metadata.title", "Sample Document")
             .putMetadata("legali.metadata.doctype", this.chooseDocType())
-            // or the enums keys
-            .putMetadata(MetadataKeys.LEGALI_METADATA_ISSUEDATE.key(), "2012-12-12")
+            .putMetadata("legali.metadata.issuedate", "2012-12-12")
+
+            // or using the enums keys
+            .putMetadata(MetadataKeys.LEGALI_METADATA_RECEIPTDATE.key(), "2012-12-11")
+
             // for boolean value, pass "true" or "false" as strings
             .putMetadata(MetadataKeys.LEGALI_PIPELINE_SPLITTING_DISABLED.key(), "true")
+
+            // pass a mapping key instead, this will look up the agent mappings stored in the db
+            // if a matching key is found, the metadata is set accordingly
+            .putMetadata("legali.mapping.key", "M1")
+
             // if a property is set to an empty string, it is ignored and the default is used
             .putMetadata("legali.metadata.some-property", "")
             .build();
@@ -193,14 +212,21 @@ public class ExampleThread implements Runnable {
       log.info("1️⃣ LegalCase does not have export with uuid {}", exportId);
     }
 
-    log.info("␡ Deleting SourceFile");
+    log.info("␡ Trying to delete SourceFile");
+    try {
+      this.sourceFileService.delete(sourceFile.sourceFileId());
+    } catch (PreconditionFailedException e) {
+      log.info("👎 You cannot delete SourceFiles from open legalcases");
+    }
+
+    log.info("🗄  Archiving LegalCase");
+    this.legalCaseService.archive(legalCaseResponse.legalCaseId());
+
+    log.info("␡ Trying again to delete SourceFile");
     this.sourceFileService.delete(sourceFile.sourceFileId());
 
     list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("😅  LegalCase has {} source files", list.size());
-
-    log.info("🗄  Archiving LegalCase");
-    this.legalCaseService.archive(legalCaseResponse.legalCaseId());
 
     log.info("🗑  Deleting LegalCase");
     this.legalCaseService.delete(legalCaseResponse.legalCaseId());
