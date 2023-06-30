@@ -1,21 +1,27 @@
 version: "3.0"
 services:
-  agent:
-    container_name: "legal-i-agent"
+  agent_spring:
+    container_name: "legal-i-agent-spring"
     build:
       dockerfile: docker/Dockerfile
-      context: ..
+      context: ../agent-example-spring
     env_file:
       - agent.env
     ports:
       - "8085:8085"
 
+  agent_quarkus:
+    container_name: "legal-i-agent-quarkus"
+    build:
+      dockerfile: src/main/docker/Dockerfile.jvm
+      context: ../agent-example-quarkus
+    env_file:
+      - agent.env
+
   # monitoring    
   prometheus:
     image: prom/prometheus
     container_name: "prometheus"
-    depends_on:
-      - agent
     volumes:
       - ./dependencies/prometheus.yml:/etc/prometheus/prometheus.yml
     command:

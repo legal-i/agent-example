@@ -1,7 +1,7 @@
-# legal-i Agent
+# legal-i Agent Examples
 
 ## Overview
-- The legal-i Example Agent is a Spring Boot application showcasing how to build a customer-specific agent.
+- The legal-i Example Agents are sample applications showcasing how to build a customer-specific agent.
 - The legal-i SDK ensures solid two-way communication between the customers' environment and the legal-i cloud.
 - The latest version is available on legal-i's GitHub repository.
 
@@ -24,7 +24,7 @@
 
 1. Setup legal-i cloud credentials in `quickstart/agent.env`
 2. In the `quickstart`-directory, run `docker-compose build`.
-3. Run `docker-compose up agent`
+3. Run `docker-compose up agent_spring` or `docker-compose up agent_quarkus`
 4. The agent runs and starts exchanging data
 5. On the app, check the agent status in the Workspace Settings (menu in avatar).
 6. In case you need monitoring or proxy support, you can start the corresponding services
@@ -43,6 +43,8 @@
 
 ## Development
 
+See the READMEs in the framework-specific subdirectories for details.
+
 ### Credentials
 Make sure to set the secrets correctly via environment variables or a properties file:
 
@@ -52,53 +54,6 @@ LEGALI_AUTH_URL=https://auth.legal-i.ch/
 LEGALI_CLIENT_ID=<from workspace>
 LEGALI_CLIENT_SECRET=<from workspace>
 ```
-
-In the `ExampleThread.java` and `ExampleEventService.java`, you see examples of how to call different APIs and subscribe to events. JavaDoc can be downloaded for the SDK module for further explanation and thrown exceptions.
-
-### Application Logic
-
-- After the Spring Boot application is initialized, the agent connects to the legal-i cloud.
-- If the connection can be established, an `HealthService.StartConnectorEvent` Event is published.
-- This has the following effects:
-	- Upon receiving this event, the `ExampleService` runs `ExampleThread` that creates legal cases and adds source files on the legal-i workspace.
-	- The `ExampleEventService` starts listening to events triggered on the API.
-		- As an example, he requests a `pong`-Event from the API.
-		- This pong will be sent by the API asynchronously and be visible in the EventHandler
-- All SDK entities and methods contain JavaDoc annotations.
-
-### Build, run, and monitor
-See Makefile for a reference of build targets:
-
-```
-make ...
-lint        run verify and skip tests
-verify      run verify with tests
-build       build the agent
-dockerize   create agent docker image tagged legali-agent
-run         run docker image
-```
-
-The following endpoints are provided in the Example Agent.
-```
-# Liveness (agent is up)
-http://localhost:8085/actuator/health/liveness
-
-# Readiness (agent can connect to the legal-i cloud)
-http://localhost:8085/actuator/health/readiness
-
-# Prometheus metrics
-http://localhost:8085/actuator/prometheus
-
-```
-
-&nbsp;
-&nbsp;
-
----
-
-&nbsp;
-&nbsp;
-
 
 ## Agent Authorization
 - The legal-i SDK is authorized via legal-i's IDP `https://auth.legal-i.ch` using the OAuth 2.0 Client Credentials Grant.
@@ -110,7 +65,10 @@ http://localhost:8085/actuator/prometheus
 - Outbound access is required to
 	- the environment-specific agent endpoints, i.e., `https://{customer-prefix}.agents.legal-i.ch`
 		- For OpenAPI3 specs refer to `https://agents.legal-i.ch/doc/swagger.html`
-	- legal-i's data buckets on AWS at `https://upload.legal-i.ch/*` and `https://data.legal-i.ch/*`
+	- legal-i's data buckets on AWS the following URLs depending on your data region.
+		- Data Ingestion `https://upload.legal-i.ch/*`
+		- Data Region in CH `https://data-ch.legal-i.ch/*` or
+		- Data Region in DE `https://data.legal-i.ch/*`
 	- legal-i's IDP: `https://auth.legal-i.ch/oauth/token`
 - No inbound access is required.
 
@@ -122,7 +80,8 @@ endpoints must be accessible outbound:
 ```
 # The files are transferred to these endpoints:
 PUT https://upload.legal-i.ch/{any}
-GET https://data.legal-i.ch/{any}
+GET https://data-ch.legal-i.ch/{any} (CH)
+GET https://data.legal-i.ch/{any} (DE)
 ```
 ```
 # Enabled
@@ -202,62 +161,6 @@ The agent must subscribe to the events it wants to receive. Events are retained 
 A list of all events can be found on swagger https://agents.legal-i.ch/doc/swagger-ui/index.html
 
 ## References
-### Configuration and Deployment
-
-All configurations can be set as environment variables by Spring Boot configuration convention.
-
-````
-# Example Agent Config
-# Iterations and parallel threads
-legali.example.iterations=1
-spring.task.execution.pool.max-size=1
-spring.task.execution.pool.core-size=1
-
-# Run cleanup round to delete test legal cases
-legali.example.cleanup=true
-
-# Disable processing pipeline for development (do not use in production)
-legali.default-metadata.legali.pipeline.disabled=true
-legali.default-metadata.legali.uploader=example-agent
-
-# Connection to the legal-i Cloud
-legali.auth-url=https://auth.legal-i.ch
-legali.api-url=https://agents.legal-i.ch/agents/v1
-legali.client-id=<>
-legali.client-secret=<>
-
-# FileService: Use CLOUDFRONT to upload files directly to AWS.
-# If there are network restrictions, you can use LEGALI to proxy via legal-i API. This is not recommended.
-legali.fileservice=CLOUDFRONT
-
-#legali.request-connection-timeout-seconds=30
-#legali.max-connection-retries=5
-#legali.request-read-timeout-seconds=90
-#legali.max-failed-heartbeats=5
-
-# Proxy setup
-#legali.http-proxy-host=localhost
-#legali.http-proxy-port=3128
-
-# Logging and Debugging
-logging.level.root=INFO
-logging.level.ch.legali.sdk.example=INFO
-logging.level.ch.legali.sdk.services=INFO
-logging.level.ch.legali.sdk.internal=INFO
-
-# Debug HTTP connection
-#logging.level.feign=DEBUG
-#legali.feign-log-level=FULL
-
-# Monitoring
-server.port=8085
-management.endpoints.web.exposure.include=health,prometheus
-management.endpoint.health.probes.enabled=true
-management.health.livenessState.enabled=true
-management.health.readinessState.enabled=true
-management.endpoint.health.group.readiness.include=readinessState,agent
-````
-
 ### Folders (Aktenordner)
 
 ```
@@ -326,6 +229,7 @@ type_correspondence_auto            : Korrespondenz (auto-recognize subtype if p
 type_correspondence_external_emails : Externe Emails
 type_correspondence_internal_emails : Interne Emails
 type_correspondence_letters         : Briefe
+type_correspondence_phone_memo      : Telefon- / Aktennotizen
 
 type_medical                        : Medizinisch
 type_medical_auto                   : Medizinisch (auto-recognize subtype if possible)
@@ -372,6 +276,4 @@ type_internal_reports               : Interne Berichte
 type_recourse                       : Regress
 
 type_other                          : Andere / Übriges (Disables legal-i's classification)
-type_other_phone_memo               : Telefon- / Aktennotizen
-
 ```

@@ -1,6 +1,8 @@
 # File Transfer API
 The legal-i SDK uses presigned URLs to upload and download files directly to AWS for efficiency and stability.
 
+Based on the data location of the tenant, the presigned URLs will point eihter to `https://data.legal-i.ch/` (Germany) or `https://data-ch.legal-i.ch/` (Switzerland)
+
 ## Flow for File Download
 **The SDK requests a presigned URL from the legal-i files API. HTTP 307 with the presigned URL in the location header is returned.**
 

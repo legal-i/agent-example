@@ -1,7 +1,6 @@
 # required secrets:
 # - DOCKER_USER: docker hub username
 # - DOCKER_TOKEN: docker hub access token
-# - DOCKER_REPO: docker repository in the ORGANISATION/IMAGENAME format
 # - LEGALI_API_URL: agent URL
 # - LEGALI_AUTH_URL: auth URL
 # - LEGALI_CLIENT_SECRET: guess!
@@ -22,28 +21,31 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
-  validate-sdk-agent:
+  validate-sdk-agent-example-spring:
+    env:
+      DOCKER_REPO: legal-i/agent-example-spring
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
       - name: Build
+        working-directory: agent-example-spring
         run: |
-          docker build -f docker/Dockerfile --tag ${{ secrets.DOCKER_REPO }}:latest .
+          docker build -f docker/Dockerfile --tag $DOCKER_REPO:latest .
       - name: Login to Docker Hub
-        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'legal-i/agent-example'
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'env.DOCKER_REPO'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Push to Docker Hub
-        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'legal-i/agent-example'
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'env.DOCKER_REPO'
         run: |
-          docker push ${{ secrets.DOCKER_REPO }}:latest
+          docker push $DOCKER_REPO:latest
       - name: Start & Validate Agent
         uses: addnab/docker-run-action@v3
         with:
-          image: ${{ secrets.DOCKER_REPO }}:latest
+          image: ${{env.DOCKER_REPO}}:latest
           options: -e LEGALI_AUTH_URL=${{ secrets.LEGALI_AUTH_URL }} -e LEGALI_CLIENT_ID=${{ secrets.LEGALI_CLIENT_ID }} -e LEGALI_API_URL=${{ secrets.LEGALI_API_URL }} -e LEGALI_CLIENT_SECRET=${{ secrets.LEGALI_CLIENT_SECRET }}
           run: |
             echo "# START AGENT"
@@ -53,9 +55,64 @@ jobs:
             pkill -e java
             echo "DONE - Looking for 'PingPong Event received' in log file..."
             cat /tmp/tmp.log
-            if  grep -q "PingPong Event received" "/tmp/tmp.log" ; then
+            if grep -q "PingPong Event received" "/tmp/tmp.log" ; then
               echo "DONE - Looking for 'LegalCase has successfully been deleted' in log file..."
-              if  grep -q "LegalCase has successfully been deleted" "/tmp/tmp.log" ; then
+              if grep -q "LegalCase has successfully been deleted" "/tmp/tmp.log" ; then
+                exit 0;
+              else
+                exit 1;
+              fi
+            else
+              exit 1;
+            fi
+      - name: Report Status
+        if: always()
+        uses: ravsamhq/notify-slack-action@v1
+        with:
+          status: ${{ job.status }}
+          notify_when: 'failure'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.ACTION_MONITORING_SLACK }}
+
+  validate-sdk-agent-example-quarkus:
+    needs:
+      - validate-sdk-agent-example-spring # make sure they don't run parallel to not interfere with each other
+    env:
+      DOCKER_REPO: legal-i/agent-example-quarkus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Build
+        working-directory: agent-example-quarkus
+        run: |
+          docker build -f src/main/docker/Dockerfile.jvm --tag $DOCKER_REPO:latest .
+      - name: Login to Docker Hub
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'env.DOCKER_REPO'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Push to Docker Hub
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'env.DOCKER_REPO'
+        run: |
+          docker push $DOCKER_REPO:latest
+      - name: Start & Validate Agent
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{env.DOCKER_REPO}}:latest
+          options: -e LEGALI_AUTH_URL=${{ secrets.LEGALI_AUTH_URL }} -e LEGALI_CLIENT_ID=${{ secrets.LEGALI_CLIENT_ID }} -e LEGALI_API_URL=${{ secrets.LEGALI_API_URL }} -e LEGALI_CLIENT_SECRET=${{ secrets.LEGALI_CLIENT_SECRET }}
+          run: |
+            echo "# START AGENT"
+            env
+            nohup /opt/jboss/container/java/run/run-java.sh > /tmp/tmp.log 2>&1 &
+            sleep 60
+            pkill -e java
+            echo "DONE - Looking for 'got pong event' in log file..."
+            cat /tmp/tmp.log
+            if grep -q "got pong event" "/tmp/tmp.log" ; then
+              echo "DONE - Looking for 'LegalCase has successfully been deleted' in log file..."
+              if grep -q "LegalCase has successfully been deleted" "/tmp/tmp.log" ; then
                 exit 0;
               else
                 exit 1;
