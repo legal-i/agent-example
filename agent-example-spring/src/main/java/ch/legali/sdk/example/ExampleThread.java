@@ -3,10 +3,7 @@ package ch.legali.sdk.example;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.exceptions.FileConflictException;
 import ch.legali.sdk.exceptions.NotFoundException;
-import ch.legali.sdk.models.AgentExportDTO;
-import ch.legali.sdk.models.AgentFileDTO;
-import ch.legali.sdk.models.AgentLegalCaseDTO;
-import ch.legali.sdk.models.AgentSourceFileDTO;
+import ch.legali.sdk.models.*;
 import ch.legali.sdk.models.AgentSourceFileDTO.MetadataKeys;
 import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
 import ch.legali.sdk.services.ExportService;
@@ -115,7 +112,7 @@ public class ExampleThread implements Runnable {
      * Ideally the files are chunked downloaded to a temporary file and then passed to
      * the SDK.
      */
-    Path fileToUpload = chooseLocalFile();
+    Path fileToUpload = this.chooseLocalFile();
 
     // add / delete a sourcefile
     AgentSourceFileDTO sourceFile =
@@ -142,6 +139,9 @@ public class ExampleThread implements Runnable {
 
             // if a property is set to an empty string, it is ignored and the default is used
             .putMetadata("legali.metadata.some-property", "")
+
+            // annotations in XFDF format
+            .annotationsXfdf(this.getExampleXfdf())
             .build();
 
     log.info("🧾  Creating SourceFile");
@@ -210,6 +210,16 @@ public class ExampleThread implements Runnable {
     } catch (NotFoundException e) {
       log.info("1️⃣ LegalCase does not have export with uuid {}", exportId);
     }
+
+    List<AgentNotebookDTO> notebooks = this.legalCaseService.listNotebooks(legalCase.legalCaseId());
+    log.info("1️⃣ LegalCase has {} notebooks", notebooks.size());
+
+    AgentSourceFileAnnotationsDTO annotations =
+        this.sourceFileService.getAnnotations(sourceFile.sourceFileId());
+    log.info(
+        "1️⃣ LegalCase has annotations XFDF of length {}: {}",
+        annotations.xfdf().length(),
+        annotations.xfdf());
 
     log.info("␡ Deleting SourceFile");
     this.sourceFileService.delete(sourceFile.sourceFileId());
@@ -285,5 +295,25 @@ public class ExampleThread implements Runnable {
    */
   private String chooseFolder() {
     return List.of("accident", "liability", "iv-be").get((int) Math.floor(Math.random() * 3));
+  }
+
+  /**
+   * @return String an example xfdf file
+   */
+  private String getExampleXfdf() {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+               + "<xfdf xmlns=\"http://ns.adobe.com/xfdf/\">\n"
+               + "    <annots>\n"
+               + "        <highlight page=\"0\" rect=\"75.071,516.351,289.625,531.103\""
+               + " color=\"#FF9800\"\n"
+               + "            name=\"1234567\" title=\"test title\" subject=\"hello world\"\n"
+               + "            date=\"D:20230706160122+02'00'\" opacity=\"0.5\""
+               + " creationdate=\"D:20230706160122+02'00'\"\n"
+               + "           "
+               + " coords=\"75.32109928446837,531.1031977120231,289.62462070530665,524.6739848693966,75.07139920622396,522.7800005529471,289.37492062706224,516.3507877103207\">\n"
+               + "            <contents>Hello World</contents>\n"
+               + "        </highlight>\n"
+               + "    </annots>\n"
+               + "</xfdf>";
   }
 }

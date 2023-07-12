@@ -57,6 +57,11 @@ public class ExampleEventService {
         //                ExportCreatedEvent.class,
         //                ExportSharedEvent.class,
         //                ExportViewedEvent.class,
+
+        //                // annotations
+        //                AnnotationCreatedEvent.class,
+        //                AnnotationUpdatedEvent.class,
+        //                AnnotationDeletedEvent.class,
         //
         //                // messaging
         //                ThreadCreatedEvent.class,

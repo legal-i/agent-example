@@ -1,21 +1,6 @@
 package ch.legali.sdk.example;
 
-import ch.legali.api.events.BaseEvent;
-import ch.legali.api.events.ExportCreatedEvent;
-import ch.legali.api.events.ExportSharedEvent;
-import ch.legali.api.events.ExportViewedEvent;
-import ch.legali.api.events.LegalCaseCreatedEvent;
-import ch.legali.api.events.LegalCaseReadyEvent;
-import ch.legali.api.events.LegalCaseStatusChangedEvent;
-import ch.legali.api.events.LegalCaseUpdatedEvent;
-import ch.legali.api.events.NotebookUpdatedEvent;
-import ch.legali.api.events.PongEvent;
-import ch.legali.api.events.SourceFileCreatedEvent;
-import ch.legali.api.events.SourceFileFailedEvent;
-import ch.legali.api.events.SourceFileReadyEvent;
-import ch.legali.api.events.SourceFileUpdatedEvent;
-import ch.legali.api.events.ThreadClosedEvent;
-import ch.legali.api.events.ThreadCreatedEvent;
+import ch.legali.api.events.*;
 import ch.legali.sdk.internal.HealthService;
 import ch.legali.sdk.services.EventService;
 import ch.legali.sdk.services.FileService;
@@ -80,6 +65,11 @@ public class ExampleEventService {
 
         // processing error
         SourceFileFailedEvent.class,
+
+        // annotations
+        AnnotationCreatedEvent.class,
+        AnnotationUpdatedEvent.class,
+        AnnotationDeletedEvent.class,
 
         // export
         ExportCreatedEvent.class,
@@ -240,6 +230,45 @@ public class ExampleEventService {
             + event.export().legalCaseId()
             + " "
             + event.user().remoteAddr());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(AnnotationCreatedEvent event) {
+    log.info(
+        "📖 AnnotationCreatedEvent: "
+            + "\n"
+            + event.annotation().legalCaseId()
+            + " "
+            + event.user().remoteAddr()
+            + "\nXFDF: "
+            + event.annotation().xfdf());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(AnnotationUpdatedEvent event) {
+    log.info(
+        "📖 AnnotationUpdatedEvent: "
+            + "\n"
+            + event.annotation().legalCaseId()
+            + " "
+            + event.user().remoteAddr()
+            + "\nXFDF: "
+            + event.annotation().xfdf());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(AnnotationDeletedEvent event) {
+    log.info(
+        "📖 AnnotationDeletedEvent: "
+            + "\n"
+            + event.annotation().legalCaseId()
+            + " "
+            + event.user().remoteAddr()
+            + "\nXFDF: "
+            + event.annotation().xfdf());
     this.eventService.acknowledge(event);
   }
 
