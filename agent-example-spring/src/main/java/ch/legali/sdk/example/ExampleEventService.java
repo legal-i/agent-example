@@ -267,8 +267,10 @@ public class ExampleEventService {
             + event.annotation().legalCaseId()
             + " "
             + event.user().remoteAddr()
-            + "\nXFDF: "
-            + event.annotation().xfdf());
+            + "\nAnnotation XFDF: "
+            + event.annotation().xfdf()
+            + "\nSourceFile XFDF: "
+            + event.annotation().sourceFileXfdf());
     this.eventService.acknowledge(event);
   }
 
