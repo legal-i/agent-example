@@ -161,6 +161,36 @@ The agent must subscribe to the events it wants to receive. Events are retained 
 A list of all events can be found on swagger https://agents.legal-i.ch/doc/swagger-ui/index.html
 
 ## References
+### Case Data 
+```
+PII_LASTNAME                   : Name
+PII_FIRSTNAME                  : Vorname
+PII_COMPANY                    : Kunde
+PII_GENDER                     : Geschlecht
+PII_BIRTHDATE                  : Geburtsdatum
+PII_AHV_NR                     : AHV-Nummer
+PII_MARITAL_STATUS             : Zivilstand
+PII_NATIONALITY                : Staatsbürgerschaft
+PII_ADDRESS                    : Adresse, Postleitzahl, Ort
+PII_PLZ                        : Postleitzahl
+PII_PHONE_NO                   : Telefonnummer 
+
+JOB_TITLE                      : Beruf
+JOB_ISCO_CODE                  : Berufsbezeichung (normalisiert nach ISCO Klassifikation)
+JOB_POSITION                   : Position
+JOB_COMPETENCE_LEVEL           : Kompetenzstufe
+JOB_PHYSICAL_LOAD              : Körperliche Belastung
+JOB_TIME_PERCENTAGE            : Beschäftigungsgrad
+JOB_INCOME_YEAR                : Jahreseinkommen
+
+INCIDENT_DATE                  : Ereignisdatum
+INCIDENT_DESCRIPTION           : Unfallbeschreibung / Beschreibung Krankheit 
+INCIDENT_POLICE_NO             : Policennummer
+INCIDENT_KIND                  : Ereignisart (Unfall oder Krankheit)
+INCIDENT_BODY_PART             : Betroffener Körperteil 
+INCIDENT_DISPUTE_VALUE         : Streitwert (in CHF) 
+```
+
 ### Folders (Aktenordner)
 
 ```

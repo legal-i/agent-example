@@ -20,6 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -82,8 +83,8 @@ public class ExampleThread implements Runnable {
     AgentLegalCaseDTO legalCase =
         AgentLegalCaseDTO.builder()
             .legalCaseId(UUID.randomUUID())
-            .firstname("John")
-            .lastname("Doe")
+            .caseData(
+                Map.ofEntries(Map.entry("PII_FIRSTNAME", "John"), Map.entry("PII_LASTNAME", "Doe")))
             .reference("123-456-789")
             // Pass the UserID from SSO
             .owner("DummyIamUser")
@@ -100,7 +101,7 @@ public class ExampleThread implements Runnable {
     AgentLegalCaseDTO nameChanged =
         AgentLegalCaseDTO.builder()
             .from(legalCaseResponse)
-            .firstname("Jane")
+            .caseData(Map.of("PII_FIRSTNAME", "Jane"))
             .reference("John changed his name")
             .build();
     this.legalCaseService.update(nameChanged);

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ch.legali</groupId>
   <artifactId>agent-example-quarkus</artifactId>
-  <version>1.1.1</version>
+  <version>1.2.0</version>
   <name>Agent Example (Quarkus)</name>
   <description>legal-i Agent Example (Quarkus)</description>
   <properties>
@@ -14,7 +14,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.2.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>3.2.3.Final</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.1.2</surefire-plugin.version>
     <pmd.version>6.55.0</pmd.version>
@@ -189,7 +189,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.37.0</version>
+        <version>2.38.0</version>
         <executions>
           <execution>
             <goals>
