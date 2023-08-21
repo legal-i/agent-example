@@ -17,6 +17,7 @@
         <notes>undertow-core-2.2.22.Final.jar</notes>
         <cve>CVE-2022-4492</cve>
         <cve>CVE-2023-1108</cve>
+        <cve>CVE-2023-3223</cve>
     </suppress>
     <suppress>
         <notes>jackson-databind-2.14.2.jar: disputed</notes>

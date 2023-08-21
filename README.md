@@ -184,10 +184,12 @@ JOB_TIME_PERCENTAGE            : Beschäftigungsgrad
 JOB_INCOME_YEAR                : Jahreseinkommen
 
 INCIDENT_DATE                  : Ereignisdatum
+INCIDENT_ICD10_CODE            : Ereignis ICD-10-Code
 INCIDENT_DESCRIPTION           : Unfallbeschreibung / Beschreibung Krankheit 
 INCIDENT_POLICE_NO             : Policennummer
 INCIDENT_KIND                  : Ereignisart (Unfall oder Krankheit)
 INCIDENT_BODY_PART             : Betroffener Körperteil 
+INCIDENT_BODY_PART_ICD10_CODE  : Betroffener Körperteil ICD-10-Code
 INCIDENT_DISPUTE_VALUE         : Streitwert (in CHF) 
 ```
 
