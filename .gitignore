@@ -4,3 +4,4 @@ pdfs/
 target/
 *.log
 *.iml
+.idea/
