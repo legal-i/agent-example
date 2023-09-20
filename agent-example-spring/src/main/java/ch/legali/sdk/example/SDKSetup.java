@@ -1,6 +1,6 @@
 package ch.legali.sdk.example;
 
-import ch.legali.sdk.SDKConfig;
+import ch.legali.sdk.SdkConfig;
 import ch.legali.sdk.internal.Auth0AccessTokenRequestInterceptor;
 import ch.legali.sdk.internal.AuthenticationRequestInterceptor;
 import ch.legali.sdk.internal.HealthService;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class SDKSetup {
 
   @Bean
-  public ConfigService configService(SDKConfig config, MeterRegistry meterRegistry) {
+  public ConfigService configService(SdkConfig config, MeterRegistry meterRegistry) {
     return new ConfigService(config, meterRegistry);
   }
 

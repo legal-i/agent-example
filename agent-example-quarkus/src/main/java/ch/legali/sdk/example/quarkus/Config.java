@@ -1,6 +1,6 @@
 package ch.legali.sdk.example.quarkus;
 
-import ch.legali.sdk.SDKConfig;
+import ch.legali.sdk.SdkConfig;
 import ch.legali.sdk.internal.Auth0AccessTokenRequestInterceptor;
 import ch.legali.sdk.internal.AuthenticationRequestInterceptor;
 import ch.legali.sdk.internal.HealthService;
@@ -29,6 +29,7 @@ import jakarta.inject.Singleton;
 import java.net.http.HttpClient;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @ApplicationScoped
 public class Config {
@@ -58,15 +59,17 @@ public class Config {
 
     Map<String, String> defaultMetadata();
 
-    Optional<SDKConfig.FileServiceType> fileService();
+    Optional<SdkConfig.FileServiceType> fileService();
 
     Optional<Integer> maxConnectionRetries();
+
+    Map<String, UUID> tenants();
   }
 
   @Produces
   @Singleton
-  SDKConfig toSDKConfig(Mapping mapping) {
-    SDKConfig config = new SDKConfig();
+  SdkConfig toSDKConfig(Mapping mapping) {
+    SdkConfig config = new SdkConfig();
     config.setApiUrl(mapping.apiUrl());
     config.setClientId(mapping.clientId());
     config.setClientSecret(mapping.clientSecret());
@@ -85,7 +88,7 @@ public class Config {
 
   @Produces
   @Singleton
-  public ConfigService configService(SDKConfig SDKConfig, MeterRegistry meterRegistry) {
+  public ConfigService configService(SdkConfig SDKConfig, MeterRegistry meterRegistry) {
     return new ConfigService(SDKConfig, meterRegistry);
   }
 

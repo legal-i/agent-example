@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.Instant;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,8 @@ public class ExampleEventService {
   public static final String BUS_STARTED = "started";
 
   private boolean started = false;
+
+  @Inject Config.Mapping config;
 
   @Inject EventService eventService;
 
@@ -85,7 +88,7 @@ public class ExampleEventService {
   @ConsumeEvent(value = ExampleEventService.BUS_STARTED)
   void start(Instant when) {
     log.info("🏓 Requesting a pong remote event");
-    eventService.ping();
+    eventService.ping(config.tenants().get("department-1"));
   }
 
   @ConsumeEvent(value = "PongEvent")
@@ -96,7 +99,23 @@ public class ExampleEventService {
 
   @ConsumeEvent(value = "LegalCaseCreatedEvent")
   void consume(LegalCaseCreatedEvent event) {
-    log.info("got legal case created event" + event);
-    eventService.acknowledge(event);
+    String department =
+        this.config.tenants().entrySet().stream()
+            .filter(entry -> entry.getValue().equals(event.tenantId()))
+            .map(Map.Entry::getKey)
+            .findFirst()
+            .orElseThrow();
+    log.info(
+        "LegalCaseCreatedEvent\n "
+            + "Tenant: "
+            + department
+            + " ("
+            + event.tenantId()
+            + "): "
+            + "\n"
+            + event.legalCase().caseData().get("PII_FIRSTNAME")
+            + " "
+            + event.legalCase().caseData().get("PII_LASTNAME"));
+    this.eventService.acknowledge(event);
   }
 }

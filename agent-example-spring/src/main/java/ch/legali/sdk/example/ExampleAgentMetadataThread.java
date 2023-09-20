@@ -1,5 +1,6 @@
 package ch.legali.sdk.example;
 
+import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.models.AgentLegalCaseDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO.MetadataKeys;
@@ -24,11 +25,15 @@ public class ExampleAgentMetadataThread implements Runnable {
 
   private final LegalCaseService legalCaseService;
   private final SourceFileService sourceFileService;
+  private final ExampleConfig exampleConfig;
 
   public ExampleAgentMetadataThread(
-      LegalCaseService legalCaseService, SourceFileService sourceFileService) {
+      LegalCaseService legalCaseService,
+      SourceFileService sourceFileService,
+      ExampleConfig exampleConfig) {
     this.legalCaseService = legalCaseService;
     this.sourceFileService = sourceFileService;
+    this.exampleConfig = exampleConfig;
   }
 
   /**
@@ -82,7 +87,7 @@ public class ExampleAgentMetadataThread implements Runnable {
             .accessGroup("group1")
             .putMetadata("meta.dummy", "dummy value")
             .build();
-    this.legalCaseService.create(legalCase);
+    this.legalCaseService.create(legalCase, this.exampleConfig.getTenants().get("department-1"));
 
     /*
      * To keep a constant memory footprint on the agent, the SDK uses a FileObject and
@@ -127,7 +132,8 @@ public class ExampleAgentMetadataThread implements Runnable {
     log.info("🧾  Creating SourceFile");
     ClassPathResource cp = new ClassPathResource(filename);
     try (InputStream is = cp.getInputStream()) {
-      this.sourceFileService.create(sourceFile, is);
+      this.sourceFileService.create(
+          sourceFile, is, this.exampleConfig.getTenants().get("department-1"));
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
@@ -136,7 +142,9 @@ public class ExampleAgentMetadataThread implements Runnable {
     // NOTE: use with care, busy waiting and usually not required
     SourceFileStatus status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
-            sourceFile.sourceFileId(), TimeUnit.SECONDS.toSeconds(3));
+            sourceFile.sourceFileId(),
+            TimeUnit.SECONDS.toSeconds(3),
+            this.exampleConfig.getTenants().get("department-1"));
 
     // NOTE: will always time out, if processing is disabled
     if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
@@ -145,11 +153,13 @@ public class ExampleAgentMetadataThread implements Runnable {
   }
 
   public void cleanup() {
-    List<AgentLegalCaseDTO> allCases = this.legalCaseService.list();
+    List<AgentLegalCaseDTO> allCases =
+        this.legalCaseService.list(this.exampleConfig.getTenants().get("department-1"));
     for (AgentLegalCaseDTO currentLegalCase : allCases) {
       if ("example-agent".equals(currentLegalCase.metadata().getOrDefault("legali.uploader", ""))) {
         log.info("🧹 Cleaning up {}", currentLegalCase.legalCaseId());
-        this.legalCaseService.delete(currentLegalCase.legalCaseId());
+        this.legalCaseService.delete(
+            currentLegalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
       }
     }
   }

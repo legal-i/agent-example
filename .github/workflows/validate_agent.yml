@@ -56,8 +56,8 @@ jobs:
             echo "DONE - Looking for 'PingPong Event received' in log file..."
             cat /tmp/tmp.log
             if grep -q "PingPong Event received" "/tmp/tmp.log" ; then
-              echo "DONE - Looking for 'LegalCase has successfully been deleted' in log file..."
-              if grep -q "LegalCase has successfully been deleted" "/tmp/tmp.log" ; then
+              echo "DONE - Looking for 'ExampleAgent run successful' in log file..."
+              if grep -q "ExampleAgent run successful" "/tmp/tmp.log" ; then
                 exit 0;
               else
                 exit 1;
@@ -111,8 +111,8 @@ jobs:
             echo "DONE - Looking for 'got pong event' in log file..."
             cat /tmp/tmp.log
             if grep -q "got pong event" "/tmp/tmp.log" ; then
-              echo "DONE - Looking for 'LegalCase has successfully been deleted' in log file..."
-              if grep -q "LegalCase has successfully been deleted" "/tmp/tmp.log" ; then
+              echo "ExampleAgent run successful' in log file..."
+              if grep -q "ExampleAgent run successful" "/tmp/tmp.log" ; then
                 exit 0;
               else
                 exit 1;

@@ -13,26 +13,47 @@ help:
 	@echo 'Usage:'
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
+## clean: cleans the build directory
+clean:
+	${maven_cmd} clean
+
+## install: mvn install
+install:
+	${maven_cmd} install -DskipTests
+
+## build: build the agent
+build:
+	@${maven_cmd} package -DskipTests
+
 ## format: run spotless google java formatter
 format:
 	@${maven_cmd} spotless:apply
 
 ## lint: run verify and skip tests
 lint:
-	@${maven_cmd} -Dmaven.test.skip=true verify
+	${maven_cmd} -B spotless:check
+	${maven_cmd} -B spotbugs:check
+	${maven_cmd} -B pmd:check
+	${maven_cmd} -B org.owasp:dependency-check-maven:check
+	${maven_cmd} -B license:add-third-party
+	! cat target/generated-sources/license/THIRD-PARTY.txt | egrep "AGPL|GPL3|SSPL"
 
-## show dependency and plugin updates
-show-updates:
-	@${maven_cmd} versions:display-dependency-updates
-	@${maven_cmd} versions:display-plugin-updates
+## lint: run unit tests
+test:
+	@${maven_cmd} test
 
-## verify: run verify with tests
+## verify: run unit-, integration tests and linters
 verify:
 	@${maven_cmd} verify
 
-## build: build the agent
-build:
-	@${maven_cmd} package -DskipTests
+# show-updates: show dependency updates
+show-updates:
+	${maven_cmd} versions:display-dependency-updates
+	${maven_cmd} versions:display-plugin-updates
+
+# dep-check: check dependencies
+dep-check:
+	${maven_cmd} org.owasp:dependency-check-maven:check
 
 ## dockerize: create agent docker image
 dockerize:

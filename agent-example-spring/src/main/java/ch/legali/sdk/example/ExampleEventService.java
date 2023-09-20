@@ -1,17 +1,19 @@
 package ch.legali.sdk.example;
 
 import ch.legali.api.events.*;
+import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.internal.HealthService;
 import ch.legali.sdk.services.EventService;
 import ch.legali.sdk.services.FileService;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
@@ -26,7 +28,7 @@ public class ExampleEventService {
   private static final Logger log = LoggerFactory.getLogger(ExampleEventService.class);
   private final FileService fileService;
   private final EventService eventService;
-
+  private final ExampleConfig exampleConfig;
   private final ApplicationEventPublisher applicationEventPublisher;
   private boolean started = false;
 
@@ -36,11 +38,13 @@ public class ExampleEventService {
       FileService fileService,
       EventService eventService,
       ApplicationEventPublisher applicationEventPublisher,
-      HealthService healthService) {
+      HealthService healthService,
+      ExampleConfig exampleConfig) {
     this.fileService = fileService;
     this.eventService = eventService;
     this.applicationEventPublisher = applicationEventPublisher;
     this.healthService = healthService;
+    this.exampleConfig = exampleConfig;
   }
 
   @PostConstruct
@@ -85,7 +89,7 @@ public class ExampleEventService {
   @EventListener
   public void onStartConnectorEvent(@SuppressWarnings("unused") StartConnectorEvent event) {
     log.info("🏓 Requesting a pong remote event");
-    this.eventService.ping();
+    this.eventService.ping(this.exampleConfig.getTenants().get("department-1"));
   }
 
   @Scheduled(fixedDelayString = "PT30S", initialDelayString = "PT3S")
@@ -123,12 +127,23 @@ public class ExampleEventService {
   // legalcase handlers
   @EventListener
   public void handle(LegalCaseCreatedEvent event) {
+    String department =
+        this.exampleConfig.getTenants().entrySet().stream()
+            .filter(entry -> entry.getValue().equals(event.tenantId()))
+            .map(Map.Entry::getKey)
+            .findFirst()
+            .orElseThrow();
     log.info(
-        "LegalCaseCreatedEvent: "
+        "LegalCaseCreatedEvent\n "
+            + "Tenant: "
+            + department
+            + " ("
+            + event.tenantId()
+            + "): "
             + "\n"
-            + event.legalCase().firstname()
+            + event.legalCase().caseData().get("PII_LASTNAME")
             + " "
-            + event.legalCase().lastname());
+            + event.legalCase().caseData().get("PII_LASTNAME"));
     this.eventService.acknowledge(event);
   }
 
@@ -151,6 +166,7 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(LegalCaseReadyEvent event) {
+    // TODO: show how to resolve the department from the tenantId
     log.info("LegalCaseReadyEvent: " + "\n" + event.legalCaseId());
     this.eventService.acknowledge(event);
   }
@@ -194,7 +210,9 @@ public class ExampleEventService {
     log.info("    Case Id   : " + event.export().legalCaseId());
     log.info("    Timestamp : " + event.ts());
 
-    try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
+    try (InputStream is =
+        this.fileService.downloadFile(
+            event.export().file().uri(), this.exampleConfig.getTenants().get("department-1"))) {
       Files.createDirectories(Paths.get("./temp"));
       Files.copy(
           is,

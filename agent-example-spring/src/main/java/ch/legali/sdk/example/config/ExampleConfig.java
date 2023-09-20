@@ -1,5 +1,7 @@
 package ch.legali.sdk.example.config;
 
+import java.util.Map;
+import java.util.UUID;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,9 @@ public class ExampleConfig {
 
   /** cleanup environment before starting: deletes all legal cases added by this example. */
   private boolean cleanup = false;
+
+  /** Map of workspaces that reflect departments . */
+  private Map<String, UUID> tenants = Map.of();
 
   public int getIterations() {
     return this.iterations;
@@ -38,5 +43,13 @@ public class ExampleConfig {
 
   public void setCleanup(boolean cleanup) {
     this.cleanup = cleanup;
+  }
+
+  public Map<String, UUID> getTenants() {
+    return Map.copyOf(tenants);
+  }
+
+  public void setTenants(Map<String, UUID> tenants) {
+    this.tenants = tenants;
   }
 }
