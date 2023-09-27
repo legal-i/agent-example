@@ -51,7 +51,7 @@ jobs:
             echo "# START AGENT"
             env
             nohup java -XX:MaxRAMPercentage=90.0 org.springframework.boot.loader.JarLauncher > /tmp/tmp.log 2>&1 &
-            sleep 60
+            sleep 90
             pkill -e java
             echo "DONE - Looking for 'PingPong Event received' in log file..."
             cat /tmp/tmp.log
@@ -106,7 +106,7 @@ jobs:
             echo "# START AGENT"
             env
             nohup /opt/jboss/container/java/run/run-java.sh > /tmp/tmp.log 2>&1 &
-            sleep 60
+            sleep 90
             pkill -e java
             echo "DONE - Looking for 'got pong event' in log file..."
             cat /tmp/tmp.log

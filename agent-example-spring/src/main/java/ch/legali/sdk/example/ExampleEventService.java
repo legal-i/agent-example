@@ -1,5 +1,6 @@
 package ch.legali.sdk.example;
 
+// CHECKSTYLE IGNORE AvoidStarImport FOR NEXT 1 LINES
 import ch.legali.api.events.*;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.internal.HealthService;
@@ -88,20 +89,21 @@ public class ExampleEventService {
   /** On connector start, ping the API to request a pong event */
   @EventListener
   public void onStartConnectorEvent(@SuppressWarnings("unused") StartConnectorEvent event) {
-    log.info("🏓 Requesting a pong remote event");
+    log.info("🏓 Requesting a pong remote event for Department 1 and Department 2");
     this.eventService.ping(this.exampleConfig.getTenants().get("department-1"));
+    this.eventService.ping(this.exampleConfig.getTenants().get("department-2"));
   }
 
   @Scheduled(fixedDelayString = "PT30S", initialDelayString = "PT3S")
   public void getEvents() {
     for (BaseEvent event : this.healthService.heartbeat()) {
-      applicationEventPublisher.publishEvent(event);
+      this.applicationEventPublisher.publishEvent(event);
     }
 
     // on first successful fetch, signal to app it's ready to do things.
-    if (!started) {
-      applicationEventPublisher.publishEvent(new StartConnectorEvent(this));
-      started = true;
+    if (!this.started) {
+      this.applicationEventPublisher.publishEvent(new StartConnectorEvent(this));
+      this.started = true;
     }
   }
 
@@ -120,7 +122,7 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(PongEvent event) {
-    log.info("🏓 PingPong Event received: " + "\nid " + event.id());
+    log.info("🏓 PingPong Event received:\n" + event.message());
     this.eventService.acknowledge(event);
   }
 
@@ -210,9 +212,7 @@ public class ExampleEventService {
     log.info("    Case Id   : " + event.export().legalCaseId());
     log.info("    Timestamp : " + event.ts());
 
-    try (InputStream is =
-        this.fileService.downloadFile(
-            event.export().file().uri(), this.exampleConfig.getTenants().get("department-1"))) {
+    try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
       Files.createDirectories(Paths.get("./temp"));
       Files.copy(
           is,

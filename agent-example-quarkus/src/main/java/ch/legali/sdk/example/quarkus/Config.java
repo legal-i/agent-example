@@ -88,8 +88,8 @@ public class Config {
 
   @Produces
   @Singleton
-  public ConfigService configService(SdkConfig SDKConfig, MeterRegistry meterRegistry) {
-    return new ConfigService(SDKConfig, meterRegistry);
+  public ConfigService configService(SdkConfig sdkConfig, MeterRegistry meterRegistry) {
+    return new ConfigService(sdkConfig, meterRegistry);
   }
 
   @Produces

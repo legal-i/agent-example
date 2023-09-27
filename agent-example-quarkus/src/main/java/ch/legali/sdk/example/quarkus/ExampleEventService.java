@@ -75,26 +75,27 @@ public class ExampleEventService {
   @Scheduled(every = "10s", delayed = "3s")
   void schedule() {
     for (BaseEvent event : this.healthService.heartbeat()) {
-      bus.publish(event.getClass().getSimpleName(), event);
+      this.bus.publish(event.getClass().getSimpleName(), event);
     }
 
     // on first successful fetch, signal to app it's ready to do things.
-    if (!started) {
-      bus.publish(BUS_STARTED, Instant.now());
-      started = true;
+    if (!this.started) {
+      this.bus.publish(BUS_STARTED, Instant.now());
+      this.started = true;
     }
   }
 
   @ConsumeEvent(value = ExampleEventService.BUS_STARTED)
   void start(Instant when) {
     log.info("🏓 Requesting a pong remote event");
-    eventService.ping(config.tenants().get("department-1"));
+    this.eventService.ping(this.config.tenants().get("department-1"));
+    this.eventService.ping(this.config.tenants().get("department-2"));
   }
 
   @ConsumeEvent(value = "PongEvent")
   void consume(PongEvent event) {
     log.info("got pong event " + event);
-    eventService.acknowledge(event);
+    this.eventService.acknowledge(event);
   }
 
   @ConsumeEvent(value = "LegalCaseCreatedEvent")

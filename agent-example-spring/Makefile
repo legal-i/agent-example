@@ -34,6 +34,7 @@ lint:
 	${maven_cmd} -B spotless:check
 	${maven_cmd} -B spotbugs:check
 	${maven_cmd} -B pmd:check
+	${maven_cmd} -B checkstyle:check
 	${maven_cmd} -B org.owasp:dependency-check-maven:check
 	${maven_cmd} -B license:add-third-party
 	! cat target/generated-sources/license/THIRD-PARTY.txt | egrep "AGPL|GPL3|SSPL"

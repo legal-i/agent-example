@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-quarkus</artifactId>
-    <version>1.3.0-alpha</version>
+    <version>1.4.0</version>
     <name>Agent Example (Quarkus)</name>
     <description>legal-i Agent Example (Quarkus)</description>
     <properties>
@@ -13,7 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.2.6.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.3.2</quarkus.platform.version>
         <skipITs>true</skipITs>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -122,7 +123,8 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner
+                                <native.image.path>
+                                    ${project.build.directory}/${project.build.finalName}-runner
                                 </native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
@@ -208,7 +210,7 @@
                                 <include>*.md</include>
                                 <include>.gitignore</include>
                             </includes>
-                            <trimTrailingWhitespace/>
+                            <trimTrailingWhitespace />
                             <indent>
                                 <tabs>true</tabs>
                                 <spacesPerTab>4</spacesPerTab>
@@ -222,6 +224,21 @@
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
                     </java>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <suppressionsLocation>
+                        checkstyle-suppressions.xml
+                    </suppressionsLocation>
+                    <suppressionsFileExpression>
+                        checkstyle.suppressions.file
+                    </suppressionsFileExpression>
                 </configuration>
             </plugin>
 

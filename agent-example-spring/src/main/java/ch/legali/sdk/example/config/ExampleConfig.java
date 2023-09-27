@@ -46,7 +46,7 @@ public class ExampleConfig {
   }
 
   public Map<String, UUID> getTenants() {
-    return Map.copyOf(tenants);
+    return Map.copyOf(this.tenants);
   }
 
   public void setTenants(Map<String, UUID> tenants) {

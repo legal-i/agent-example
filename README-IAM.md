@@ -1,130 +1,114 @@
 # legal-i IAM Integration
 
-## SSO Overview
-- User login to legal-i through single sign-on on the customer's IDP.
-- All common SSO protocols are supported, legal-i handles auth with Auth0.
-- Authorization on Workspaces is defined with groups in the customer's IDP.
-- Authorization on legal cases is defined with access groups. Access grups are mapped from the customer's IDP.
+## Single Sign-On (SSO) Overview
+
+- Users access the legal-i platform through Single Sign-On (SSO) via their customer's Identity Provider (IDP), primarily Active Directory (AD).
+- legal-i supports common SSO protocols, with authentication managed by Auth0 through Okta.
+- Customer departments are mapped to different legal-i workspaces.
+- Workspace authorization is configured through customer IDP groups.
+- Access to legal cases within a workspace or department is controlled by access groups synchronized from the IDP.
 
 ### Login
-- The users login on `https://{customer-prefix}.app.legal-i.ch` and are redirected to the customer's login page.
-- Users that are authorized for multiple legal-i workspaces (e.g. `test`, `int`, `prod`) can choose the desired workspace after login
+
+- Users initiate the login process at `https://{workspace-prefix}.app.legal-i.ch` and are automatically redirected to the customer's login page.
+- Users who have authorization for multiple workspaces, whether for staging or departments, can select their desired workspace after logging in.
 
 ## Authorization on Workspaces
-- Users are authorized by their AD groups.
-- The customer defines the mapping between AD groups, legal-i workspaces, and roles.
-- Examples of such mappings are:
-	- If the user has the group `any-prefix-legali-produktion-sachbearbeiter`, he will be authorized to the `prod` workspace and be given `basic` role.
-	- If the user has the group `any-prefix-legali-development-admin`, he will be authorized to the `dev` workspace and be given `workspace admin` role.
 
+- User authorization on legal-i workspaces is based on their Active Directory (AD) groups.
+- The customer defines mappings between AD groups, legal-i workspaces, and associated roles.
+- Examples of such mappings include:
+  - Users belonging to the group `any-prefix-legali-prod-unfall-sachbearbeiter` are authorized for the `prod-unfall` workspace with the `basic` role.
+  - Users in the group `any-prefix-legali-development-admin` are authorized for the `development` workspace with the `workspace admin` role.
 
 ## Roles in legal-i
 
-**Workspace Admins** have access to...
-- all legal cases in a workspace
-- admin functions like audit logs, workspace settings or reporting
-- can CRUD legal cases and source files
+**Workspace Admins** have access to:
 
-This role is given to the project lead.
+- All legal cases within a workspace.
+- Administrative functions such as audit logs, workspace settings, and reporting.
+- The ability to Create, Read, Update, and Delete (CRUD) legal cases and source files.
 
-**Power Users** have access to
-- all legal cases in the workspace
-- can crud legal cases and source file
+This role is typically assigned to project leads.
 
-This role is given to internal power user to support basic users.
+**Technical Admins** have access to:
 
-**Basic Users** have strictly limited access
-- cannot CRUD legal cases or source files
-- ca only access to legal cases to which they are authorized by access groups
+- Administrative functions, including audit logs, workspace settings, and reporting.
+- However, they do not have access to the legal cases or any business data.
+
+This role is typically assigned to internal technical staff.
+
+**Basic Users** have strictly limited access:
+
+- They do not have CRUD permissions for legal cases or source files.
+- At the legal case level, they are authorized to see:
+  - All legal cases that do not have an access group defined.
+  - Legal cases with access groups if they are members of those groups.
 
 ## Authorization on Legal Cases with Access Groups
-Legal cases within one workspace are segregated using access group. Access groups are mapped from the AD groups to the users during SSO. Example:
-- The mapping prefix is configured as `any-prefix-legali-`. All groups that contain this prefix are mapped to the legal-i user as access groups.
 
-Given a legal case with a defined access group, basic users can access this legal case if, and only if, they possess the same access group themselves.
+Legal cases within a workspace or department are organized using access groups, which are mapped from Active Directory (AD) groups to users during Single Sign-On (SSO). Here's how it works:
 
-*Example*
+- The mapping prefix, configured as `any-prefix-legali-`, associates AD groups containing this prefix with legal-i users as access groups.
 
-Given the following users are authorized on a workspace:
-- Markus is a Basic User with access groups ["liability"]
-- Achim is a Basic User with access groups ["accident"]
-- Nicolas is a Basic User with access groups ["accident", "liability"]
-- Ralph is a Power User.
+Basic users can access legal cases with access groups only if they possess the same access group themselves.
 
-then...
+**Example:**
 
-- Markus can access all the legal cases with the group "liability". He cannot access any legal cases with group "accident" or any other group. For Achim, it's the same, but he is restricted to legal cases from "accident".
-- Nicolas has access to legal cases that contain either the group "accident" or "liability".
-- Ralph can access all legal cases, since he has the power user role. Further, only Ralph can access a legal case tagged with "other-department".
+Consider the following legal-i team members authorized on a given workspace:
 
+- Markus is a Basic User without any access groups.
+- Nicolas is a Basic User with access groups ["vip"].
+- Achim is a Basic User with access groups ["employees"].
+- Aimé is a Basic User with access groups ["vip", "employees"].
+- Ralph is a Workspace Admin User.
+- Nikolas is a Technical Admin User.
 
-## Configuration of Identity providers
+In this scenario:
 
-The following section provides guidance on how to configure the customer's IDP.
-An example is provided for Azure AD, but other supported IDPs (OIDC, SAML, ...) should work in a similar fashion.
+- Markus can access all legal cases that do not have an access group defined.
+- Nicolas can access all legal cases that do not have an access group defined or have the access group "vip" defined.
+- Achim can access all legal cases that do not have an access group defined or have the access group "employees" defined.
+- Aimé can access all legal cases that do not have an access group defined or have the access group "vip" or "employees" defined.
+- Ralph can access all legal cases, as he is a Workspace Admin User.
+- Nikolas cannot access any legal cases, as he is a Technical Admin User.
 
-### Choice of user identifier
+## Configuration of Identity Providers
 
-When creating a `LegalCase` using the SDK or the API, the customer has to provide a reference to a user (i.e. a user ID) in the `owner` field.
+This section provides guidance on configuring the customer's Identity Provider (IDP) for seamless integration with legal-i. While an example is provided for Azure AD, similar configurations apply to other supported IDPs, such as OIDC and SAML.
 
-It is important that the customer's IDP passes the same user ID during SSO login, so that the legal case can reference that user.
+### Choice of User Identifier
 
-Thus, the customer has to decide which user ID to use for the `owner` field:
-- It needs to be **unique** and **immutable**. This usually rules out email addresses, since they can change at most companies (i.e. if an employee gets married)
-- When using Azure AD, the user's object ID could be used. However, most companies don't want to use that since it could change when changing IDP,
-  and often the systems creating the legal cases do not have access to the internal Azure AD object ID
-- So, ideally a stable internal employee ID (personal number) should be used. Be aware that Azure AD requires the employee ID be configured as a custom claim, so it's passed on SSO login to Auth0.
+When creating a `LegalCase` using the SDK or the API, it is essential that the customer provides a reference to a user (i.e., a user ID) in the `owner` field. To ensure smooth operation, the customer's IDP must pass the same user ID during Single Sign-On (SSO) login to allow proper referencing of the legal case. Considerations include:
 
-### Vanilla Azure AD configuration
+- The user ID should be **unique** and **immutable**, ruling out email addresses, which can change, especially in the case of name changes.
+- In Azure AD, the user's object ID is a candidate for use. However, many companies prefer a more stable internal employee ID (personal number). Configuring Azure AD to pass the employee ID as a custom claim during SSO login is necessary.
 
-If no custom claim configuration is required (see step above), a default Azure AD Auth0 configuration can be used.
+### Vanilla Azure AD Configuration
 
-Documentation: https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/azure-active-directory/v2
+If no custom claim configuration is required, a default Azure AD Auth0 configuration can be used. Key steps include:
 
-Enterprise Application defined with a callback to:
-```
-https://auth.legal-i.ch/login/callback
-```
+- Configure an Enterprise Application with a callback to `https://auth.legal-i.ch/login/callback`.
+- Ensure the SSO app has delegated permissions for reading user profiles, including `Users > User.Read` and `Directory > Directory.Read.All`.
 
-The SSO app requires the following delegated permissions to read the user profiles:
-```
-Users > User.Read
-Directory > Directory.Read.All
-```
-Refer to Auth0’s guide for further details or other SSO integrations.
-```
-https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/azure-active-directory/v2
-```
+For detailed steps, refer to Auth0’s documentation [here](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/azure-active-directory/v2).
 
-If a customer has multiple workspaces, e.g. for `test`, `int`, `prod`, the same SSO application is used.
-
+If a customer operates multiple workspaces, such as `test`, `int`, and `prod`, the same SSO application can be used.
 
 ### OIDC Azure AD Configuration
 
-When employee ID - or any other custom claim - needs to be passed from Azure AD, Auth0 has to use an OpenID Connect connection
-(instead of an Azure AD connection, which does not support custom claims), which requires a slightly different configuration on Azure AD side.
+When custom claims, like employee ID, need to be passed from Azure AD, Auth0 should use an OpenID Connect (OIDC) connection instead of an Azure AD connection. Key steps include:
 
-Create an Enterprise Application & App Registration (same as in the official guide above).
-
-Then, the `groups` claim needs to be manually configured:
-- Select the created **App registration**
-- Click on **Token configuration**, **Add groups claim**
-- Select **Security groups** and choose **sAMAccountName** in the Tab **Access**
+- Create an Enterprise Application and App Registration (similar to the official guide mentioned above).
+- Manually configure the `groups` claim in the App Registration settings by selecting the created **App registration**, clicking on **Token configuration**, and adding the **groups** claim with **sAMAccountName** in the **Access** tab.
 
 #### Configure Employee ID on Azure AD
 
-If an employee ID (or a different field) should be passed from Azure AD (see section below),
-an Azure AD policy has to be configured; the following shows example powershell commands:
+For passing additional claims like employee ID from Azure AD, configuring an Azure AD policy is necessary. Here are example PowerShell commands for this:
 
 ```powershell
-# connect to AD
+# Connect to Azure AD
 AzureADPreview\Connect-AzureAD
 
-# Create Azure AD Policy with definition for employeeid
-New-AzureADPolicy -Definition @('{"ClaimsMappingPolicy":{"Version":1,"IncludeBasicClaimSet":"true", "ClaimsSchema": [{"Source":"user","ID":"employeeid","SamlClaimType":http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name,"JwtClaimType":"employeeid"}]}}') -DisplayName "employeeid" -Type "ClaimsMappingPolicy"
-
-# Add employeeid Policy to a service principal
-Add-AzureADServicePrincipalPolicy -Id <ObjectId from service principal> -RefObjectId <Policy Id>
-
-# as a last thing, make sure acceptMappedClaims is set to true in the App registration's manifest.
-```
+# Create an Azure AD Policy with a definition for employee ID
+New-AzureADPolicy -Definition @('{"ClaimsMappingPolicy":{"Version":1,"IncludeBasicClaimSet":"true", "ClaimsSchema": [{"Source":"user","ID":"employeeid","SamlClaimType":"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name","JwtClaimType":"employeeid"}]}}')

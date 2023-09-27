@@ -132,8 +132,7 @@ public class ExampleAgentMetadataThread implements Runnable {
     log.info("🧾  Creating SourceFile");
     ClassPathResource cp = new ClassPathResource(filename);
     try (InputStream is = cp.getInputStream()) {
-      this.sourceFileService.create(
-          sourceFile, is, this.exampleConfig.getTenants().get("department-1"));
+      this.sourceFileService.create(sourceFile, is);
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
@@ -142,9 +141,7 @@ public class ExampleAgentMetadataThread implements Runnable {
     // NOTE: use with care, busy waiting and usually not required
     SourceFileStatus status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
-            sourceFile.sourceFileId(),
-            TimeUnit.SECONDS.toSeconds(3),
-            this.exampleConfig.getTenants().get("department-1"));
+            sourceFile.sourceFileId(), TimeUnit.SECONDS.toSeconds(3));
 
     // NOTE: will always time out, if processing is disabled
     if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
@@ -153,13 +150,11 @@ public class ExampleAgentMetadataThread implements Runnable {
   }
 
   public void cleanup() {
-    List<AgentLegalCaseDTO> allCases =
-        this.legalCaseService.list(this.exampleConfig.getTenants().get("department-1"));
+    List<AgentLegalCaseDTO> allCases = this.legalCaseService.list();
     for (AgentLegalCaseDTO currentLegalCase : allCases) {
       if ("example-agent".equals(currentLegalCase.metadata().getOrDefault("legali.uploader", ""))) {
         log.info("🧹 Cleaning up {}", currentLegalCase.legalCaseId());
-        this.legalCaseService.delete(
-            currentLegalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+        this.legalCaseService.delete(currentLegalCase.legalCaseId());
       }
     }
   }

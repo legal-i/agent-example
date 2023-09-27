@@ -1,46 +1,31 @@
 # legal-i Agent Examples
 
 ## Overview
+
 - The legal-i Example Agents are sample applications showcasing how to build a customer-specific agent.
 - The legal-i SDK ensures solid two-way communication between the customers' environment and the legal-i cloud.
 - The latest version is available on legal-i's GitHub repository.
+# No-Code Quickstart
 
-&nbsp;
-&nbsp;
+**Prerequisites**
 
----
+- Access to legal-i's GitHub repository at [https://github.com/legal-i/agent-example](https://github.com/legal-i/agent-example)
+- Agent credentials for your workspace, available through the app in the workspace settings under "Integration"
+- Recent versions of Docker and Docker Compose
+- Internet access to `*.legal-i.ch`
 
-&nbsp;
-&nbsp;
+**Steps:**
 
-## No-Code Quickstart
-
-*Prerequisites*
-
-- Access to legal-i's GitHub repository on https://github.com/legal-i/agent-example
-- Agent credentials for your workspace, available through the app.
-- Recent docker and docker-compose
-- Internet-Access to `*.legal-i.ch`.
-
-1. Setup legal-i cloud credentials in `quickstart/agent.env`
-2. In the `quickstart`-directory, run `docker-compose build`.
+1. Set up legal-i cloud credentials in `quickstart/agent.env`
+2. In the `quickstart` directory, run `docker-compose build`.
 3. Run `docker-compose up agent_spring` or `docker-compose up agent_quarkus`
 4. The agent runs and starts exchanging data
-5. On the app, check the agent status in the Workspace Settings (menu in avatar).
-6. In case you need monitoring or proxy support, you can start the corresponding services
-	1. Monitoring: `docker-compose up prometheus grafana`
-		1. Open Grafana at http://localhost:3000/ (admin/adminex)
-		2. Add Prometheus data source pointing to http://prometheus:9090/
-	2. HTTP Proxy: `docker-compose up squid`,  adapt `agent.env` to use the proxy
-
-&nbsp;
-&nbsp;
-
----
-
-&nbsp;
-&nbsp;
-
+5. On the app, check the agent status in Workspace Settings / Integration.
+6. In case you need monitoring or proxy support, you can start the corresponding services:
+   - Monitoring: `docker-compose up prometheus grafana`
+     - Access Grafana at [http://localhost:3000/](http://localhost:3000/) (admin/adminex)
+     - Add Prometheus data source pointing to http://prometheus:9090/
+   - HTTP Proxy: `docker-compose up squid` and adapt `agent.env` to use the proxy
 ## Development
 
 See the READMEs in the framework-specific subdirectories for details.
@@ -91,13 +76,6 @@ legali.fileservice = CLOUDFRONT
 Note: The `LEGALI` file service is deprecated and only used for development.
 For details, refer to `README-FILES.md`.
 
-&nbsp;
-&nbsp;
-
----
-
-&nbsp;
-&nbsp;
 
 ## Entities, Events and Mapping
 
@@ -140,20 +118,17 @@ legali.metadata.doctype = "type_medical_report"
 # disables splitting of the source file into documents
 legali.pipeline.splitting.disabled = "true"
 ```
-
-
 ### Example for setting up Document Type classifications
+
 Document Type / Labels:
-- if you want legal-i to classify the type, *do not send this property* or send an *empty string* as value
-- if you know the exact document type, pass it, e.g. `type_medical_report`.
-- if you know the parent type and you want legal-i to classify the subtype, pass `type_parent_auto`. E.g., `type_medical_auto` will limit the classification to all medical subtypes.
-- if you don’t know the exact type and you *do not want legal-i to classify the document*, pass `type_other`
 
-This behaviour can also be configured in the mapping configuration in the legal-i app.
+- To have legal-i classify the type, *do not send this property* or send an *empty string* as the value.
+- If you know the exact document type, pass it, e.g., `type_medical_report`.
+- If you know the parent type and want legal-i to classify the subtype, pass `type_parent_auto`. For example, `type_medical_auto` will limit the classification to all medical subtypes.
+- If you don’t know the exact type and *do not want legal-i to classify the document*, pass `type_other`.
 
+This behavior can also be configured in the mapping configuration in the legal-i app.
 
-&nbsp;
-&nbsp;
 
 ### Events
 
@@ -299,8 +274,6 @@ type_financial                      : Finanziell
 type_financial_auto                 : Finanziell (auto-recognize subtype if possible)
 type_financial_allowance_overview   : Taggeld-Abrechnungen
 type_financial_invoice              : Rechnungen
-
-
 type_internal                       : Interne Dokumente
 type_internal_antifraud             : Akten der internen Betrugsbekämpfungsstelle
 type_internal_reports               : Interne Berichte

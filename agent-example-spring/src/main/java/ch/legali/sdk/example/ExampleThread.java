@@ -3,7 +3,12 @@ package ch.legali.sdk.example;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.exceptions.FileConflictException;
 import ch.legali.sdk.exceptions.NotFoundException;
-import ch.legali.sdk.models.*;
+import ch.legali.sdk.models.AgentExportDTO;
+import ch.legali.sdk.models.AgentFileDTO;
+import ch.legali.sdk.models.AgentLegalCaseDTO;
+import ch.legali.sdk.models.AgentNotebookDTO;
+import ch.legali.sdk.models.AgentSourceFileAnnotationsDTO;
+import ch.legali.sdk.models.AgentSourceFileDTO;
 import ch.legali.sdk.models.AgentSourceFileDTO.MetadataKeys;
 import ch.legali.sdk.models.AgentSourceFileDTO.SourceFileStatus;
 import ch.legali.sdk.services.ExportService;
@@ -95,20 +100,18 @@ public class ExampleThread implements Runnable {
             .accessGroup("group1")
             .putMetadata("meta.dummy", "dummy value")
             .build();
-    this.legalCaseService.create(legalCase, this.exampleConfig.getTenants().get("department-1"));
+    this.legalCaseService.create(legalCase, this.exampleConfig.getTenants().get("department-2"));
 
     // update legal case
     log.info("🤓  Updating LegalCase");
-    AgentLegalCaseDTO legalCaseResponse =
-        this.legalCaseService.get(
-            legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    AgentLegalCaseDTO legalCaseResponse = this.legalCaseService.get(legalCase.legalCaseId());
     AgentLegalCaseDTO nameChanged =
         AgentLegalCaseDTO.builder()
             .from(legalCaseResponse)
             .caseData(Map.of("PII_FIRSTNAME", "Jane"))
             .reference("John changed his name")
             .build();
-    this.legalCaseService.update(nameChanged, this.exampleConfig.getTenants().get("department-1"));
+    this.legalCaseService.update(nameChanged);
 
     /*
      * To keep a constant memory footprint on the agent, the SDK uses a FileObject and
@@ -151,8 +154,7 @@ public class ExampleThread implements Runnable {
 
     log.info("🧾  Creating SourceFile");
     try (InputStream is = Files.newInputStream(fileToUpload)) {
-      this.sourceFileService.create(
-          sourceFile, is, this.exampleConfig.getTenants().get("department-1"));
+      this.sourceFileService.create(sourceFile, is);
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
@@ -161,9 +163,7 @@ public class ExampleThread implements Runnable {
     // NOTE: use with care, busy waiting and usually not required
     SourceFileStatus status =
         this.sourceFileService.waitForSourceFileReadyOrTimeout(
-            sourceFile.sourceFileId(),
-            TimeUnit.SECONDS.toSeconds(3),
-            this.exampleConfig.getTenants().get("department-1"));
+            sourceFile.sourceFileId(), TimeUnit.SECONDS.toSeconds(3));
 
     // NOTE: will always time out, if processing is disabled
     if (status.equals(SourceFileStatus.ERROR) || status.equals(SourceFileStatus.TIMEOUT)) {
@@ -174,8 +174,7 @@ public class ExampleThread implements Runnable {
     try {
       ClassPathResource cp = new ClassPathResource("sample2.pdf");
       try (InputStream file2 = cp.getInputStream()) {
-        this.sourceFileService.create(
-            sourceFile, file2, this.exampleConfig.getTenants().get("department-1"));
+        this.sourceFileService.create(sourceFile, file2);
       } catch (IOException e) {
         log.error("🙅‍  Failed to open sample2.pdf file", e);
       }
@@ -184,85 +183,71 @@ public class ExampleThread implements Runnable {
     }
     log.info("🧾  Creating the same SourceFile AGAIN (creates are idempotent)");
     try (InputStream is = Files.newInputStream(fileToUpload)) {
-      this.sourceFileService.create(
-          sourceFile, is, this.exampleConfig.getTenants().get("department-1"));
+      this.sourceFileService.create(sourceFile, is);
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
 
-    List<AgentSourceFileDTO> list =
-        this.sourceFileService.getByLegalCase(
-            legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    List<AgentSourceFileDTO> list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} source files", list.size());
 
     // download file again and verify md5
     AgentFileDTO downloadedFile = list.get(0).originalFile();
-    try (InputStream is =
-        this.fileService.downloadFile(
-            downloadedFile.uri(), this.exampleConfig.getTenants().get("department-1"))) {
+    try (InputStream is = this.fileService.downloadFile(downloadedFile.uri())) {
       Path target = Path.of("./" + downloadedFile.filename());
       Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
 
       MessageDigest md = MessageDigest.getInstance("MD5");
       String md5 = Base64.getEncoder().encodeToString(md.digest(Files.readAllBytes(target)));
-      log.info(
-          "🧮 MD5 of downloaded file is {}",
-          md5.equals(downloadedFile.md5()) ? "correct" : "DIFFERENT!");
+      if (!md5.equals(downloadedFile.md5())) {
+        throw new RuntimeException("MD5 of downloaded file is not correct");
+      }
+      log.info("🧮 MD5 of downloaded file is {}: correct", downloadedFile.md5());
 
       Files.delete(target);
     } catch (NoSuchAlgorithmException | IOException e) {
       e.printStackTrace();
     }
 
-    List<AgentExportDTO> exportsList =
-        this.exportService.list(
-            legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} exports", exportsList.size());
 
     UUID exportId = UUID.randomUUID();
     try {
-      AgentExportDTO export =
-          this.exportService.get(exportId, this.exampleConfig.getTenants().get("department-1"));
+      AgentExportDTO export = this.exportService.get(exportId);
       log.info("1️⃣ LegalCase has export with uuid {}", export.exportId());
     } catch (NotFoundException e) {
       log.info("1️⃣ LegalCase does not have export with uuid {}", exportId);
     }
 
-    List<AgentNotebookDTO> notebooks =
-        this.legalCaseService.listNotebooks(
-            legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    List<AgentNotebookDTO> notebooks = this.legalCaseService.listNotebooks(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} notebooks", notebooks.size());
 
     AgentSourceFileAnnotationsDTO annotations =
-        this.sourceFileService.getAnnotations(
-            sourceFile.sourceFileId(), this.exampleConfig.getTenants().get("department-1"));
+        this.sourceFileService.getAnnotations(sourceFile.sourceFileId());
     log.info(
         "1️⃣ LegalCase has annotations XFDF of length {}: {}",
         annotations.xfdf().length(),
         annotations.xfdf());
 
     log.info("␡ Deleting SourceFile");
-    this.sourceFileService.delete(
-        sourceFile.sourceFileId(), this.exampleConfig.getTenants().get("department-1"));
+    this.sourceFileService.delete(sourceFile.sourceFileId());
 
     log.info("🗄  Archiving LegalCase");
-    this.legalCaseService.archive(
-        legalCaseResponse.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    this.legalCaseService.archive(legalCaseResponse.legalCaseId());
 
-    list =
-        this.sourceFileService.getByLegalCase(
-            legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
     log.info("😅  LegalCase has {} source files", list.size());
 
     log.info("🗑  Deleting LegalCase");
-    this.legalCaseService.delete(
-        legalCaseResponse.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+    this.legalCaseService.delete(legalCaseResponse.legalCaseId());
 
     try {
-      this.legalCaseService.get(
-          legalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+      this.legalCaseService.get(legalCase.legalCaseId());
     } catch (NotFoundException ignored) {
-      log.info("🥳  LegalCase has successfully been deleted, well done!");
+      log.info(
+          "🥳  LegalCase is not in any authorized tenants! It has successfully been deleted, well"
+              + " done!");
     }
   }
 
@@ -290,33 +275,64 @@ public class ExampleThread implements Runnable {
     this.legalCaseService.create(
         legalCaseDept2, this.exampleConfig.getTenants().get("department-2"));
 
+    this.legalCaseService
+        .list()
+        .forEach(
+            lc -> log.info("🗂  LegalCase {} is in tenant {}", lc.legalCaseId(), lc.tenantId()));
+
+    // add files
+    Path fileToUpload = this.chooseLocalFile();
+    AgentSourceFileDTO sourceFileDept1 =
+        AgentSourceFileDTO.builder()
+            .sourceFileId(UUID.randomUUID())
+            .legalCaseId(legalCaseDept1.legalCaseId())
+            .folder(chooseFolder())
+            .fileReference("hello.pdf")
+            .build();
+    try (InputStream is = Files.newInputStream(fileToUpload)) {
+      this.sourceFileService.create(sourceFileDept1, is);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    AgentSourceFileDTO sourceFileDept2 = AgentSourceFileDTO.builder().from(sourceFileDept1).build();
+    try (InputStream is = Files.newInputStream(fileToUpload)) {
+      this.sourceFileService.create(sourceFileDept2, is);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    // try to access both
+    String sourceFileDept1Uri =
+        this.sourceFileService.get(sourceFileDept1.sourceFileId()).originalFile().uri();
+    String sourceFileDept2Uri =
+        this.sourceFileService.get(sourceFileDept2.sourceFileId()).originalFile().uri();
+    try (InputStream is = this.fileService.downloadFile(sourceFileDept1Uri)) {
+      log.info("📁 Dept1: File with length: {}", is.readAllBytes().length);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    try (InputStream is = this.fileService.downloadFile(sourceFileDept2Uri)) {
+      log.info("📁 Dept2: File 2 length: {}", is.readAllBytes().length);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     // DELETE
 
     log.info("🗑  Deleting LegalCase - Department 1");
-    this.legalCaseService.delete(
-        legalCaseDept1.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
-    log.info("🗑  Trying to delete legalCaseDept2 in Department 1");
-    try {
-      this.legalCaseService.delete(
-          legalCaseDept2.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
-    } catch (NotFoundException e) {
-      log.info("👎 Wrong department, legalCaseDept2 is not in Department 1");
-    }
+    this.legalCaseService.delete(legalCaseDept1.legalCaseId());
 
     log.info("🗑  Deleting LegalCase - Department 2");
-    this.legalCaseService.delete(
-        legalCaseDept2.legalCaseId(), this.exampleConfig.getTenants().get("department-2"));
+    this.legalCaseService.delete(legalCaseDept2.legalCaseId());
     log.info("🥳 LegalCases for Department 1 and Department 2 have been created and deleted!");
   }
 
   public void cleanup() {
-    List<AgentLegalCaseDTO> allCases =
-        this.legalCaseService.list(this.exampleConfig.getTenants().get("department-1"));
+    List<AgentLegalCaseDTO> allCases = this.legalCaseService.list();
     for (AgentLegalCaseDTO currentLegalCase : allCases) {
       if ("example-agent".equals(currentLegalCase.metadata().getOrDefault("legali.uploader", ""))) {
         log.info("🧹 Cleaning up {}", currentLegalCase.legalCaseId());
-        this.legalCaseService.delete(
-            currentLegalCase.legalCaseId(), this.exampleConfig.getTenants().get("department-1"));
+        this.legalCaseService.delete(currentLegalCase.legalCaseId());
       }
     }
   }

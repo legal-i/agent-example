@@ -18,16 +18,7 @@ In the `ExampleService.java` and `ExampleEventService.java`, you see examples of
 - All SDK entities and methods contain JavaDoc annotations.
 
 ### Build, run, and monitor
-See Makefile for a reference of build targets:
-
-```
-make ...
-lint        run verify and skip tests
-verify      run verify with tests
-build       build the agent
-dockerize   create agent docker image
-run         run docker image
-```
+See Makefile for a reference of build targets.
 
 The following endpoints are provided in the Example Agent.
 ```
