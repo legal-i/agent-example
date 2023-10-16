@@ -39,7 +39,7 @@ lint:
 	${maven_cmd} -B license:add-third-party
 	! cat target/generated-sources/license/THIRD-PARTY.txt | egrep "AGPL|GPL3|SSPL"
 
-## lint: run unit tests
+## test: run unit tests
 test:
 	@${maven_cmd} test
 

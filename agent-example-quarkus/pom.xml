@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-quarkus</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <name>Agent Example (Quarkus)</name>
     <description>legal-i Agent Example (Quarkus)</description>
     <properties>
@@ -14,7 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.3.2</quarkus.platform.version>
+        <quarkus.platform.version>3.4.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

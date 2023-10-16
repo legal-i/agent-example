@@ -168,8 +168,12 @@ public class ExampleEventService {
 
   @EventListener
   public void handle(LegalCaseReadyEvent event) {
-    // TODO: show how to resolve the department from the tenantId
-    log.info("LegalCaseReadyEvent: " + "\n" + event.legalCaseId());
+    log.info(
+        "LegalCaseReadyEvent: "
+            + "\nlegalCaseId: "
+            + event.legalCaseId()
+            + "\nurl: "
+            + event.legalCaseUrl());
     this.eventService.acknowledge(event);
   }
 
