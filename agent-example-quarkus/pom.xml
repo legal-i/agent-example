@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-quarkus</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0</version>
     <name>Agent Example (Quarkus)</name>
     <description>legal-i Agent Example (Quarkus)</description>
     <properties>
@@ -14,13 +14,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.4.3</quarkus.platform.version>
+        <quarkus.platform.version>3.5.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.release>17</maven.compiler.release>
         <java.version>17</java.version>
-        <pmd.version>6.55.0</pmd.version>
+        <pmd.version>7.0.0-rc4</pmd.version>
         <surefire-plugin.version>3.1.2</surefire-plugin.version>
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
     </properties>
@@ -76,6 +76,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>https://repository.apache.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
     <build>
         <plugins>
             <plugin>
@@ -136,7 +149,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.3.5</version>
+                <version>4.7.3.6</version>
                 <configuration>
                     <excludeFilterFile>spotbugs_ignore.xml</excludeFilterFile>
                     <addSourceDirs>true</addSourceDirs>
@@ -145,7 +158,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.7.3</version>
+                        <version>4.8.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -161,7 +174,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>3.21.1-pmd-7.0.0-SNAPSHOT</version>
                 <configuration>
                     <failOnViolation>true</failOnViolation>
                     <printFailingErrors>true</printFailingErrors>
@@ -195,7 +208,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.39.0</version>
+                <version>2.40.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -219,7 +232,7 @@
                     </formats>
                     <java>
                         <googleJavaFormat>
-                            <version>1.17.0</version>
+                            <version>1.18.1</version>
                             <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
@@ -230,7 +243,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <suppressionsLocation>
@@ -245,7 +258,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>8.4.0</version>
+                <version>8.4.2</version>
                 <configuration>
                     <skipProvidedScope>true</skipProvidedScope>
                     <skipRuntimeScope>true</skipRuntimeScope>

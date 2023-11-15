@@ -172,7 +172,7 @@ public class ExampleEventService {
         "LegalCaseReadyEvent: "
             + "\nlegalCaseId: "
             + event.legalCaseId()
-            + "\nurl: "
+            + "\nlegalCaseUrl: "
             + event.legalCaseUrl());
     this.eventService.acknowledge(event);
   }

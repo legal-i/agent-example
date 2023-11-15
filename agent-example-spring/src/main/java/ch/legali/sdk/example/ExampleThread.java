@@ -128,7 +128,7 @@ public class ExampleThread implements Runnable {
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCase.legalCaseId())
             .folder(chooseFolder())
-            .fileReference("hello.pdf")
+            .fileReference(UUID.randomUUID().toString())
 
             // To pass metadata properties, you can use strings...
             .putMetadata("legali.metadata.title", "Sample Document")
@@ -179,11 +179,24 @@ public class ExampleThread implements Runnable {
         log.error("🙅‍  Failed to open sample2.pdf file", e);
       }
     } catch (FileConflictException fileConflictException) {
-      log.info("🙅‍  Sourcefile file are different, refused to do something!‍️");
+      log.info("🙅‍  Sourcefile files are different, refused due to conflict!‍️");
     }
     log.info("🧾  Creating the same SourceFile AGAIN (creates are idempotent)");
     try (InputStream is = Files.newInputStream(fileToUpload)) {
       this.sourceFileService.create(sourceFile, is);
+    } catch (IOException e) {
+      log.error("🙅‍  Failed to create SourceFile", e);
+    }
+
+    // Try to create same sourcefile again with another file, this time with a different id but with
+    // the same file reference
+    log.info(
+        "🧾  Creating the same SourceFile AGAIN using a different UUID but same fileReference"
+            + " (creates are idempotent)");
+    try (InputStream is = Files.newInputStream(fileToUpload)) {
+      AgentSourceFileDTO sourceFile2 =
+          AgentSourceFileDTO.builder().from(sourceFile).sourceFileId(UUID.randomUUID()).build();
+      this.sourceFileService.create(sourceFile2, is);
     } catch (IOException e) {
       log.error("🙅‍  Failed to create SourceFile", e);
     }
@@ -287,7 +300,7 @@ public class ExampleThread implements Runnable {
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCaseDept1.legalCaseId())
             .folder(chooseFolder())
-            .fileReference("hello.pdf")
+            .fileReference(UUID.randomUUID().toString())
             .build();
     try (InputStream is = Files.newInputStream(fileToUpload)) {
       this.sourceFileService.create(sourceFileDept1, is);

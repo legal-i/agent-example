@@ -85,7 +85,7 @@ public class ExampleEventService {
     }
   }
 
-  @ConsumeEvent(value = ExampleEventService.BUS_STARTED)
+  @ConsumeEvent(value = BUS_STARTED)
   void start(Instant when) {
     log.info("🏓 Requesting a pong remote event");
     this.eventService.ping(this.config.tenants().get("department-1"));

@@ -95,7 +95,7 @@ public class ExampleService {
     /*
      * To keep a constant memory footprint on the agent, the SDK uses a FileObject and
      * not a ByteArrayResource. PDF files can be large if they contain images (>
-     * 500MB), in multi-threaded mode this leads to unwanted spikes in memory usage.
+     * 500MB), in multithreaded mode this leads to unwanted spikes in memory usage.
      * Ideally the files are chunked downloaded to a temporary file and then passed to
      * the SDK.
      */
@@ -106,7 +106,7 @@ public class ExampleService {
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCase.legalCaseId())
             .folder(chooseFolder())
-            .fileReference("hello.pdf")
+            .fileReference(UUID.randomUUID().toString())
 
             // To pass metadata properties, you can use strings...
             .putMetadata("legali.metadata.title", "Sample Document")
@@ -248,14 +248,26 @@ public class ExampleService {
             .sourceFileId(UUID.randomUUID())
             .legalCaseId(legalCaseDept1.legalCaseId())
             .folder(chooseFolder())
-            .fileReference("hello.pdf")
+            .fileReference(
+                UUID.randomUUID()
+                    .toString()) // SourceFile create endpoint is idempotent on sourceFileId and
+            // fileReference
             .build();
     try (InputStream is = getClass().getResourceAsStream("/sample.pdf")) {
       this.sourceFileService.create(sourceFileDept1, is);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    AgentSourceFileDTO sourceFileDept2 = AgentSourceFileDTO.builder().from(sourceFileDept1).build();
+    AgentSourceFileDTO sourceFileDept2 =
+        AgentSourceFileDTO.builder()
+            .from(sourceFileDept1)
+            .sourceFileId(UUID.randomUUID())
+            .legalCaseId(legalCaseDept2.legalCaseId())
+            .fileReference(
+                UUID.randomUUID()
+                    .toString()) // SourceFile create endpoint is idempotent on sourceFileId and
+            // fileReference
+            .build();
     try (InputStream is = getClass().getResourceAsStream("/sample.pdf")) {
       this.sourceFileService.create(sourceFileDept2, is);
     } catch (IOException e) {
