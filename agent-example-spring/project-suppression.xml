@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
-        <notes>False Positive</notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring-.*@.*$</packageUrl>
-        <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
-    </suppress>
-    <suppress>
         <notes>snakeyaml-1.33.jar</notes>
         <cve>CVE-2022-1471</cve>
     </suppress>
+
     <suppress>
-        <notes>undertow-core-2.3.8</notes>
-        <cve>CVE-2016-6311</cve>
+        <notes>spring-core-6.0.13.jar</notes>
+        <cve>CVE-2023-34053</cve>
     </suppress>
 </suppressions>

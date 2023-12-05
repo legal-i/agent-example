@@ -165,7 +165,11 @@ INCIDENT_POLICE_NO             : Policennummer
 INCIDENT_KIND                  : Ereignisart (Unfall oder Krankheit)
 INCIDENT_BODY_PART             : Betroffener Körperteil 
 INCIDENT_BODY_PART_ICD10_CODE  : Betroffener Körperteil ICD-10-Code
-INCIDENT_DISPUTE_VALUE         : Streitwert (in CHF) 
+INCIDENT_DISPUTE_VALUE         : Streitwert (in CHF)
+
+CUSTOM_1					   : Benutzerdefiniertes Feld 1  (Additional reference)
+CUSTOM_2					   : Benutzerdefiniertes Feld 2
+CUSTOM_3					   : Benutzerdefiniertes Feld 3
 ```
 
 ### Folders (Aktenordner)

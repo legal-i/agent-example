@@ -12,7 +12,7 @@
     </parent>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-spring</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <name>Agent Example (Spring)</name>
     <description>legal-i Agent Example (Spring)</description>
     <properties>
@@ -23,7 +23,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         <java.version>17</java.version>
         <pmd.version>7.0.0-rc4</pmd.version>
-        <log4j2.version>2.18.0</log4j2.version>
+        <logback.version>1.4.14</logback.version>
     </properties>
     <repositories>
         <repository>
@@ -117,7 +117,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.8.0</version>
+                        <version>4.8.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
