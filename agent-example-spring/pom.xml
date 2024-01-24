@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.1.8</version>
         <relativePath />
     </parent>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-spring</artifactId>
-    <version>1.5.1</version>
+    <version>1.5.2</version>
     <name>Agent Example (Spring)</name>
     <description>legal-i Agent Example (Spring)</description>
     <properties>
