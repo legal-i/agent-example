@@ -222,6 +222,20 @@ public class ExampleThread implements Runnable {
       e.printStackTrace();
     }
 
+    // move sourcefile to another legalcase, it will fail since the legalcase does not exist
+    log.info("🚚  Moving SourceFile to another LegalCase");
+    AgentSourceFileDTO sourceFileToMove =
+        AgentSourceFileDTO.builder().from(sourceFile).legalCaseId(UUID.randomUUID()).build();
+    try {
+      try (InputStream is = Files.newInputStream(fileToUpload)) {
+        this.sourceFileService.move(sourceFileToMove, is);
+      } catch (IOException e) {
+        log.error("🙅‍  Failed to move SourceFile", e);
+      }
+    } catch (NotFoundException e) {
+      log.info("🙅‍  LegalCase {} does not exist", sourceFileToMove.legalCaseId());
+    }
+
     List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
     log.info("1️⃣ LegalCase has {} exports", exportsList.size());
 
