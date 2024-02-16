@@ -185,21 +185,57 @@ public class ExampleService {
       e.printStackTrace();
     }
 
+    // replace sourcefile within the same legalcase, it will fail since the sourcefile does not
+    // exist
+    log.info("\uD83D\uDD28  Replace SourceFile in LegalCase");
+    AgentSourceFileDTO sourceFileToReplace =
+        AgentSourceFileDTO.builder()
+            .from(sourceFile)
+            // NOTE: you must use the same UUID of the sourcefile you want to replace!
+            // this is just to make it fail for the sake of the example
+            .sourceFileId(UUID.randomUUID())
+            .folder("new-folder")
+            .putMetadata("legali.mapping.key", "M2")
+            .build();
+    try {
+      try (InputStream is = getClass().getResourceAsStream("/sample.pdf")) {
+        this.sourceFileService.replace(sourceFileToReplace, is);
+      } catch (IOException e) {
+        log.error("🙅‍  Failed to replace SourceFile", e);
+      }
+    } catch (NotFoundException e) {
+      log.info("🙅‍  SourceFile {} does not exist", sourceFileToReplace.sourceFileId());
+    }
+
+    // move sourcefile to another legalcase, it will fail since the legalcase does not exist
+    log.info("🚚  Moving SourceFile to another LegalCase");
+    AgentSourceFileDTO sourceFileToMove =
+        AgentSourceFileDTO.builder().from(sourceFile).legalCaseId(UUID.randomUUID()).build();
+    try {
+      try (InputStream is = getClass().getResourceAsStream("/sample.pdf")) {
+        this.sourceFileService.move(sourceFileToMove, is);
+      } catch (IOException e) {
+        log.error("🙅‍  Failed to move SourceFile", e);
+      }
+    } catch (NotFoundException e) {
+      log.info("🙅‍  LegalCase {} does not exist", sourceFileToMove.legalCaseId());
+    }
+
     List<AgentExportDTO> exportsList = this.exportService.list(legalCase.legalCaseId());
-    log.info("1️⃣ LegalCase has {} exports", exportsList.size());
+    log.info("1️⃣  LegalCase has {} exports", exportsList.size());
 
     UUID exportId = UUID.randomUUID();
     try {
       AgentExportDTO export = this.exportService.get(exportId);
-      log.info("1️⃣ LegalCase has export with uuid {}", export.exportId());
+      log.info("1️⃣  LegalCase has export with uuid {}", export.exportId());
     } catch (NotFoundException e) {
-      log.info("1️⃣ LegalCase does not have export with uuid {}", exportId);
+      log.info("1️⃣  LegalCase does not have export with uuid {}", exportId);
     }
 
-    log.info("␡ Deleting SourceFile");
+    log.info("␡  Deleting SourceFile");
     this.sourceFileService.delete(sourceFile.sourceFileId());
 
-    log.info("🗄  Archiving LegalCase");
+    log.info("🗄 Archiving LegalCase");
     this.legalCaseService.archive(legalCaseResponse.legalCaseId());
 
     list = this.sourceFileService.getByLegalCase(legalCase.legalCaseId());
@@ -314,7 +350,7 @@ public class ExampleService {
    * @return String random doc type
    */
   private String chooseDocType() {
-    return List.of("type_medical", "type_profession_ik_statement", "type_legal_disposal")
+    return List.of("type_medical", "type_profession_ikstatement", "type_legal_disposal")
         .get((int) Math.floor(Math.random() * 3));
   }
 
