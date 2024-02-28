@@ -4,6 +4,7 @@ package ch.legali.sdk.example;
 import ch.legali.api.events.*;
 import ch.legali.sdk.example.config.ExampleConfig;
 import ch.legali.sdk.internal.HealthService;
+import ch.legali.sdk.models.AgentFileDTO;
 import ch.legali.sdk.services.EventService;
 import ch.legali.sdk.services.FileService;
 import jakarta.annotation.PostConstruct;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExampleEventService {
   private static final Logger log = LoggerFactory.getLogger(ExampleEventService.class);
+
+  private static final int THRESHOLD_GIGABYTES = 1;
   private final FileService fileService;
   private final EventService eventService;
   private final ExampleConfig exampleConfig;
@@ -216,16 +219,22 @@ public class ExampleEventService {
     log.info("    Case Id   : " + event.export().legalCaseId());
     log.info("    Timestamp : " + event.ts());
 
-    try (InputStream is = this.fileService.downloadFile(event.export().file().uri())) {
+    AgentFileDTO fileToDownload;
+    if (event.export().file().contentLength() > (THRESHOLD_GIGABYTES * 1000000000)
+        && event.export().tocFile() != null) {
+      fileToDownload = event.export().tocFile();
+    } else {
+      fileToDownload = event.export().file();
+    }
+
+    try (InputStream is = this.fileService.downloadFile(fileToDownload.uri())) {
       Files.createDirectories(Paths.get("./temp"));
       Files.copy(
-          is,
-          Path.of("./temp/" + event.export().file().filename()),
-          StandardCopyOption.REPLACE_EXISTING);
+          is, Path.of("./temp/" + fileToDownload.filename()), StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    log.info("⤵️  Downloaded file: {}", event.export().file().filename());
+    log.info("⤵️  Downloaded file: {}", fileToDownload.filename());
 
     this.eventService.acknowledge(event);
   }

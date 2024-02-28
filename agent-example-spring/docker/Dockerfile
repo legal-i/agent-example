@@ -38,6 +38,6 @@ COPY --from=builder /app/application/ ./
 EXPOSE 8085
 USER legali
 
-ENTRYPOINT ["java", "-XX:MaxRAMPercentage=90.0", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=90.0", "org.springframework.boot.loader.launch.JarLauncher"]
 
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl -f http://localhost:8085/actuator/health/liveness || exit 1

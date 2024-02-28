@@ -239,8 +239,13 @@ type_admin_reportingalviv		    : Meldeverfahren ALV/IV
 
 type_correspondence                 : Korrespondenz
 type_correspondence_auto            : Korrespondenz (auto-recognize subtype if possible)
-type_correspondence_email_external  : Externe Emails
+type_correspondence_email           : Emails
 type_correspondence_email_internal  : Interne Emails
+type_correspondence_email_admin     : Administrative E-Mails
+type_correspondence_email_medical   : Medizinische E-Mails
+type_correspondence_email_legal     : Rechtliche E-Mails
+type_correspondence_email_profession: Berufliche E-Mails
+type_correspondence_email_financial : Finanzielle E-Mails
 type_correspondence_letter          : Briefe
 type_correspondence_phonememo       : Telefon- / Aktennotizen
 
