@@ -19,6 +19,7 @@ on:
     # * is a special character in YAML so you have to quote this string
     # run once per day at 06.00 UTC
     - cron: '0 6 * * *'
+  workflow_dispatch:
 
 jobs:
   validate-sdk-agent-example-spring:
