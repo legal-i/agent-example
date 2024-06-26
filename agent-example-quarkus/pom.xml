@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-quarkus</artifactId>
-    <version>1.6.2</version>
+    <version>1.6.3</version>
     <name>Agent Example (Quarkus)</name>
     <description>legal-i Agent Example (Quarkus)</description>
     <properties>
@@ -14,7 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.7.4</quarkus.platform.version>
+        <quarkus.platform.version>3.11.3</quarkus.platform.version>
         <skipITs>true</skipITs>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -135,7 +135,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.7.3.6</version>
+                <version>4.8.5.0</version>
                 <configuration>
                     <excludeFilterFile>spotbugs_ignore.xml</excludeFilterFile>
                     <addSourceDirs>true</addSourceDirs>
@@ -144,7 +144,7 @@
                     <dependency>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs</artifactId>
-                        <version>4.8.1</version>
+                        <version>4.8.6</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.40.0</version>
+                <version>2.43.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -184,7 +184,7 @@
                     </formats>
                     <java>
                         <googleJavaFormat>
-                            <version>1.18.1</version>
+                            <version>1.22.0</version>
                             <style>GOOGLE</style>
                             <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
@@ -195,7 +195,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <suppressionsLocation>
