@@ -167,9 +167,9 @@ INCIDENT_BODY_PART             : Betroffener Körperteil
 INCIDENT_BODY_PART_ICD10_CODE  : Betroffener Körperteil ICD-10-Code
 INCIDENT_DISPUTE_VALUE         : Streitwert (in CHF)
 
-CUSTOM_1					   : Benutzerdefiniertes Feld 1  (Additional reference)
-CUSTOM_2					   : Benutzerdefiniertes Feld 2
-CUSTOM_3					   : Benutzerdefiniertes Feld 3
+CUSTOM_1                       : Benutzerdefiniertes Feld 1  (Additional reference)
+CUSTOM_2                       : Benutzerdefiniertes Feld 2
+CUSTOM_3                       : Benutzerdefiniertes Feld 3
 ```
 
 ### Folders (Aktenordner)
@@ -177,6 +177,7 @@ CUSTOM_3					   : Benutzerdefiniertes Feld 3
 ```
 unknown                        : Anderes
 migration_file                 : Migrationsdossier
+internal_files                 : Eigene Akten
 internal_accident              : Eigene UVG Akten
 internal_pension               : Eigene BVG Akten
 internal_health_allowances     : Eigene KTG Akten
@@ -192,8 +193,12 @@ pension                        : BVG
 vvg                            : VVG
 accident                       : Unfall
 suva                           : Unfall (SUVA)
+social_insurance               : Sozialversicherungsakten
+civil_process                  : Prozessakten (ZPO)
+social_process                 : Prozessakten (Soz.)
+legal_representation_files     : Akten Rechtsvertretung
 
-iv							   : IV Allgemein
+iv                             : IV Allgemein
 iv-ag                          : IV Aargau
 iv-ai                          : IV Appenzell Innerrhoden
 iv-ar                          : IV Appenzell Ausserrhoden
@@ -235,7 +240,7 @@ type_admin_factssheet               : Feststellungsblätter
 type_admin_tableofcontent           : Inhaltsverzeichnisse
 type_admin_protocol                 : Protokolle
 type_admin_supplementaryahvivpayments: Verrechnung Nachzahlungen AHV/IV
-type_admin_reportingalviv		    : Meldeverfahren ALV/IV
+type_admin_reportingalviv           : Meldeverfahren ALV/IV
 
 type_correspondence                 : Korrespondenz
 type_correspondence_auto            : Korrespondenz (auto-recognize subtype if possible)
@@ -283,8 +288,8 @@ type_profession_cv                  : Lebensläufe
 type_profession_employmentcontract  : Arbeitsverträge / Kündigungen
 type_profession_questionnaire       : Arbeitgeberfragebogen
 type_profession_wagestatements      : Lohnabrechnungen
-type_profession_reference			: Arbeitszeugnisse / Diplome
-type_profession_integration			: Eingliederung
+type_profession_reference           : Arbeitszeugnisse / Diplome
+type_profession_integration         : Eingliederung
 
 type_financial                      : Finanziell
 type_financial_auto                 : Finanziell (auto-recognize subtype if possible)
