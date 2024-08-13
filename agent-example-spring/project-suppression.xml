@@ -15,5 +15,6 @@
     <suppress>
         <notes>undertow-core-2.3.13.Final.jar</notes>
         <cve>CVE-2024-6162</cve>
+        <cve>CVE-2024-5971</cve>
     </suppress>
 </suppressions>
