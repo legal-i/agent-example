@@ -61,6 +61,7 @@ public class ExampleEventService {
         LegalCaseCreatedEvent.class,
         LegalCaseStatusChangedEvent.class,
         LegalCaseUpdatedEvent.class,
+        LegalCaseDeletedEvent.class,
         NotebookUpdatedEvent.class,
 
         // all sourcefiles processed
@@ -163,9 +164,9 @@ public class ExampleEventService {
     log.info(
         "LegalCaseUpdatedEvent: "
             + "\n"
-            + event.legalCase().firstname()
+            + event.legalCase().caseData().get("PII_LASTNAME")
             + " "
-            + event.legalCase().lastname());
+            + event.legalCase().caseData().get("PII_FIRSTNAME"));
     this.eventService.acknowledge(event);
   }
 
@@ -177,6 +178,12 @@ public class ExampleEventService {
             + event.legalCaseId()
             + "\nlegalCaseUrl: "
             + event.legalCaseUrl());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(LegalCaseDeletedEvent event) {
+    log.info("LegalCaseDeletedEvent: " + "\n" + event.legalCase().legalCaseId());
     this.eventService.acknowledge(event);
   }
 

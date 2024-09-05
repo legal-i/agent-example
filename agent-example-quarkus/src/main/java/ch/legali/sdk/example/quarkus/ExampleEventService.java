@@ -43,6 +43,7 @@ public class ExampleEventService {
         LegalCaseCreatedEvent.class
         //                LegalCaseStatusChangedEvent.class,
         //                LegalCaseUpdatedEvent.class,
+        //                LegalCaseDeletedEvent.class,
         //                NotebookUpdatedEvent.class,
         //
         //                // all sourcefiles processed
