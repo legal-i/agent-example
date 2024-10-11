@@ -31,5 +31,6 @@
     <suppress>
         <notes>spring-web-6.1.11.jar</notes>
         <cve>CVE-2024-38809</cve>
+		<cve>CVE-2024-38816</cve>
     </suppress>
 </suppressions>

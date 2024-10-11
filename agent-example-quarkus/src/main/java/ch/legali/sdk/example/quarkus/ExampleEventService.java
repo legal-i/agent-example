@@ -67,9 +67,9 @@ public class ExampleEventService {
         //                AnnotationUpdatedEvent.class,
         //                AnnotationDeletedEvent.class,
         //
-        //                // messaging
-        //                ThreadCreatedEvent.class,
-        //                ThreadClosedEvent.class
+        //                // collaboration
+        //                TicketCreatedEvent.class,
+        //                TicketUpdatedEvent.class
         );
   }
 

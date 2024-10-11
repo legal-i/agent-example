@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
@@ -85,9 +84,9 @@ public class ExampleEventService {
         ExportSharedEvent.class,
         ExportViewedEvent.class,
 
-        // messaging
-        ThreadCreatedEvent.class,
-        ThreadClosedEvent.class);
+        // collaboration
+        TicketCreatedEvent.class,
+        TicketUpdatedEvent.class);
   }
 
   /** On connector start, ping the API to request a pong event */
@@ -313,23 +312,30 @@ public class ExampleEventService {
   }
 
   @EventListener
-  public void handle(ThreadCreatedEvent event) {
-    log.info("🧵 ThreadCreatedEvent: " + "\n" + "Subject: " + event.subject());
-    this.eventService.acknowledge(event);
-  }
-
-  @EventListener
-  public void handle(ThreadClosedEvent event) {
+  public void handle(TicketCreatedEvent event) {
     log.info(
-        "🧵 ThreadClosedEvent: "
+        "🎫 TicketCreatedEvent: "
             + "\n"
             + "Subject: "
             + event.subject()
             + "\n"
-            + (event.attachments().size() > 0
-                ? "Message attachment URI(s):"
+            + "Ticket Request: "
+            + event.question());
+    this.eventService.acknowledge(event);
+  }
+
+  @EventListener
+  public void handle(TicketUpdatedEvent event) {
+    log.info(
+        "🎫 TicketUpdatedEvent: "
+            + "\n"
+            + "Status: "
+            + event.status()
+            + "\n"
+            + (!event.ticket().attachments().isEmpty()
+                ? "Ticket attachment URI(s):"
                     + "\n"
-                    + event.attachments().stream().collect(Collectors.joining("\n"))
+                    + String.join("\n", event.ticket().attachments())
                 : ""));
 
     this.eventService.acknowledge(event);
