@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-quarkus</artifactId>
-    <version>1.6.5</version>
+    <version>1.6.6</version>
     <name>Agent Example (Quarkus)</name>
     <description>legal-i Agent Example (Quarkus)</description>
     <properties>

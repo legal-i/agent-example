@@ -110,6 +110,7 @@ public class ExampleService {
 
             // To pass metadata properties, you can use strings...
             .putMetadata("legali.metadata.title", "Sample Document")
+            .putMetadata("legali.metadata.alttitle", "Alternative Title")
             .putMetadata("legali.metadata.doctype", this.chooseDocType())
             .putMetadata("legali.metadata.issuedate", "2012-12-12")
 
