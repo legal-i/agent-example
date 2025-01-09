@@ -91,6 +91,11 @@ public class ExampleThread implements Runnable {
         AgentLegalCaseDTO.builder()
             .legalCaseId(UUID.randomUUID())
             .caseData(
+                // IMPORTANT: every case must have a PII_FIRSTNAME and PII_LASTNAME, or PII_COMPANY
+                // set.
+                // Generally speaking, if the case belongs to a person, PII_FIRSTNAME and
+                // PII_LASTNAME should be set. If the case belongs to a company or any other case,
+                // PII_COMPANY should be set.
                 Map.ofEntries(Map.entry("PII_FIRSTNAME", "John"), Map.entry("PII_LASTNAME", "Doe")))
             .reference("123-456-789")
             // Pass the UserID from SSO
@@ -132,6 +137,7 @@ public class ExampleThread implements Runnable {
 
             // To pass metadata properties, you can use strings...
             .putMetadata("legali.metadata.title", "Sample Document")
+            .putMetadata("legali.metadata.alttitle", "Alternative Title")
             .putMetadata("legali.metadata.doctype", this.chooseDocType())
             .putMetadata("legali.metadata.issuedate", "2012-12-12")
 
