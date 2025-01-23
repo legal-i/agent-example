@@ -12,7 +12,7 @@
     </parent>
     <groupId>ch.legali</groupId>
     <artifactId>agent-example-spring</artifactId>
-    <version>1.6.6</version>
+    <version>1.8.1</version>
     <name>Agent Example (Spring)</name>
     <description>legal-i Agent Example (Spring)</description>
     <properties>

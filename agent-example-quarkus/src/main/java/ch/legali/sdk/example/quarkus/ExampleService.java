@@ -113,6 +113,8 @@ public class ExampleService {
             .putMetadata("legali.metadata.alttitle", "Alternative Title")
             .putMetadata("legali.metadata.doctype", this.chooseDocType())
             .putMetadata("legali.metadata.issuedate", "2012-12-12")
+            .putMetadata("legali.metadata.pagination.number", "123")
+            .putMetadata("legali.metadata.pagination.number", "Wf0ZoNA5")
 
             // or using the enums keys
             .putMetadata(
@@ -232,6 +234,25 @@ public class ExampleService {
     } catch (NotFoundException e) {
       log.info("1️⃣  LegalCase does not have export with uuid {}", exportId);
     }
+
+    // UPDATE METADATA
+    log.info("🔄 Updating sourcefile metadata");
+
+    AgentSourceFileDTO metadataUpdateSourceFile =
+        AgentSourceFileDTO.builder()
+            .sourceFileId(sourceFile.sourceFileId())
+            .legalCaseId(sourceFile.legalCaseId())
+            .folder(chooseFolder())
+            .fileReference(UUID.randomUUID().toString())
+
+            // To pass metadata properties, you can use strings...
+            .putMetadata("legali.metadata.alttitle", "New Alt Title")
+            // .putMetadata("legali.metadata.pagination.number", "0124")
+            // .putMetadata("legali.metadata.pagination.id", "af0enXL1")
+            .build();
+
+    this.sourceFileService.updateMetadata(metadataUpdateSourceFile);
+    log.info("⬆️ SourceFile metadata updated");
 
     log.info("␡  Deleting SourceFile");
     this.sourceFileService.delete(sourceFile.sourceFileId());

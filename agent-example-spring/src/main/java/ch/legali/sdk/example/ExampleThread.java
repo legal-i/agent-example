@@ -140,6 +140,8 @@ public class ExampleThread implements Runnable {
             .putMetadata("legali.metadata.alttitle", "Alternative Title")
             .putMetadata("legali.metadata.doctype", this.chooseDocType())
             .putMetadata("legali.metadata.issuedate", "2012-12-12")
+            .putMetadata("legali.metadata.pagination.number", "123")
+            .putMetadata("legali.metadata.pagination.id", "Wf0ZoNA5")
 
             // or using the enums keys
             .putMetadata(MetadataKeys.LEGALI_METADATA_RECEIPTDATE.key(), "2012-12-11")
@@ -285,6 +287,25 @@ public class ExampleThread implements Runnable {
         annotations.xfdf().length(),
         annotations.xfdf());
 
+    // UPDATE METADATA
+    log.info("🔄 Updating sourcefile metadata");
+
+    AgentSourceFileDTO metadataUpdateSourceFile =
+        AgentSourceFileDTO.builder()
+            .sourceFileId(sourceFile.sourceFileId())
+            .legalCaseId(sourceFile.legalCaseId())
+            .folder(chooseFolder())
+            .fileReference(UUID.randomUUID().toString())
+
+            // To pass metadata properties, you can use strings...
+            .putMetadata("legali.metadata.alttitle", "New Alt Title")
+            // .putMetadata("legali.metadata.pagination.number", "0124")
+            // .putMetadata("legali.metadata.pagination.id", "af0enXL1")
+            .build();
+
+    this.sourceFileService.updateMetadata(metadataUpdateSourceFile);
+    log.info("⬆️ SourceFile metadata updated");
+
     log.info("␡  Deleting SourceFile");
     this.sourceFileService.delete(sourceFile.sourceFileId());
 
@@ -373,7 +394,6 @@ public class ExampleThread implements Runnable {
     }
 
     // DELETE
-
     log.info("🗑  Deleting LegalCase - Department 1");
     this.legalCaseService.delete(legalCaseDept1.legalCaseId());
 

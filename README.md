@@ -106,6 +106,15 @@ legali.metadata.issuedate = "2020-01-22" (NOTE: YYYY-MM-DD)
 # sets a receipt date on the document
 legali.metadata.receiptdate = "2020-01-01" (NOTE: YYYY-MM-DD)
 
+# sets the alternative title on the document (NOTE: updatable metadata field)
+legali.metadata.alttitle = "alternative title"
+
+# sets the pagination number on the document (NOTE: updatable metadata field)
+legali.metadata.pagination.number = "123"
+
+# sets the pagination id on the document (NOTE: updatable metadata field)
+legali.metadata.pagination.id = "Wf0ZoNA5"
+
 # For debugging: the pipeline can be disabled entirely
 legali.pipeline.disabled = "true"
 ```
