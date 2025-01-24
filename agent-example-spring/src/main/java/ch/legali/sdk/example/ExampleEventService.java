@@ -242,6 +242,21 @@ public class ExampleEventService {
     }
     log.info("⤵️  Downloaded file: {}", fileToDownload.filename());
 
+    if (!event.export().paginationReferencesList().isEmpty()) {
+      log.info("🔗  References of paginated documents: ");
+      event
+          .export()
+          .paginationReferencesList()
+          .forEach(
+              reference ->
+                  log.info(
+                      String.format(
+                          "    SourceFileId: %36s PaginationNo: %4s PaginationId: %8s",
+                          reference.sourceFileId(),
+                          reference.paginationNo(),
+                          reference.paginationId())));
+    }
+
     this.eventService.acknowledge(event);
   }
 

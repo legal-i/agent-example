@@ -19,6 +19,11 @@
     <remote-repository>
       <option name="id" value="legali" />
       <option name="name" value="Legal-i Maven Repository" />
+      <option name="url" value="file:$MAVEN_REPOSITORY$" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="legali" />
+      <option name="name" value="Legal-i Maven Repository" />
       <option name="url" value="https://repository.legal-i.ch/release" />
     </remote-repository>
   </component>
