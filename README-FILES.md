@@ -12,7 +12,7 @@ REQUEST: https://agents.legal-i.ch/agents/v1/files/556a0908-0dcf-49f9-ab34-898d7
 	:method: GET
 	:path: /agents/v1/files/556a0908-0dcf-49f9-ab34-898d7f3a6212/EXPORT/b479a684-db08-4f34-8f11-5c28fdff157c.pdf
 	:scheme: https
-	User-Agent: Java-http-client/17.0.4.1
+	User-Agent: Java-http-client/21
 	Accept: */*
 	Authorization: Bearer <TOKEN>
 
@@ -40,7 +40,7 @@ REQUEST: https://data.legal-i.ch/526602b4-0e96-4c90-bc28-ce720c9c6521/556a0908-0
 	:method: GET
 	:path: /526602b4-0e96-4c90-bc28-ce720c9c6521/556a0908-0dcf-49f9-ab34-898d7f3a6212/export/b479a684-db08-4f34-8f11-5c28fdff157c.pdf?Expires=1663336111&Signature=sraMO~kpRbLyFT8uIPQXsJf3jEu-W0xT8dtwf~6xN4Yt27GY4kxS-GljaumncWjrvKaekXUAsmCF-9meaSq4mjbBN4RvRyFe8UisoZfsl4N27h21I~PMdjCu2oMwnRUUZRGtwVWgrzptL34i-rcFFnQPf7FuN7CMN0Mz4RDpl4~-NpftOsUpVL50fvzMh5P948bdfGqewsZCWUBuaBNNRl3O2mgBjWhx9I9Jr4fke3Ze75NUElIKXRDvwTrBbXvpEiyOqBjJv1tXsXa5l5mdr775NWjM7oyCA5A94h6u1oCUtlf~kTjMyyDlLn6ARd2Ems-mK1Gt~uW73PF8lFMDAQ__&Key-Pair-Id=KQ99OHURCHWVL
 	:scheme: https
-	User-Agent: Java-http-client/17.0.4.1
+	User-Agent: Java-http-client/21
 
 RESPONSE HEADERS:
 	:status: 200
@@ -73,7 +73,7 @@ REQUEST: https://upload.legal-i.ch/526602b4-0e96-4c90-bc28-ce720c9c6521/5205b0f6
 	:path: /526602b4-0e96-4c90-bc28-ce720c9c6521/5205b0f6-cc86-4cae-b2b2-76efbe27725e?Expires=1663335989&Signature=xxx~9g-OVH3DYV9nS6nQz-v~vNFetVWiO~b3zOnaWM1uds97UnsCwOZl-uboH13SpMeoRh~TWIC~mD6eW0KJAhZSNLulVUSledjei9RA4ZoMbSGJs-hPSq~weYBlXThG-8GvNtOlXFHsv2FH5M8M2NVn7LNr5Y3kVUUSRgNZRFadQzzetRcbk1iQtUffR-4ZSSRm2LnGLTMdCj-~Q~D7e1AeeqaPGC6W9bd4goUTi3AJ737MC3v2ZuAucCn-LKAh4tRP~YicyFmZOrmgOaBMyH9euRCHuDrJz4sGfsKYEwSZS2omzeBMtF9cXxHm3IA__&Key-Pair-Id=KQ99OHURCHWVL
 	:scheme: https
 	content-length: 11540
-	User-Agent: Java-http-client/17.0.4.1
+	User-Agent: Java-http-client/21
 	x-amz-acl: bucket-owner-full-control
 
 HEADERS: RESPONSE HEADERS:
