@@ -234,7 +234,7 @@ iv-li                          : IV Liechtenstein
 
 ```
 
-### Document Types (Dokumenttypen / Labels)
+### Document Types (Dokumenttypen)
 
 ```
 type_admin                          : Admin
