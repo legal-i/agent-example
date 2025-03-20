@@ -129,7 +129,7 @@ legali.pipeline.splitting.disabled = "true"
 ```
 ### Example for setting up Document Type classifications
 
-Document Type / Labels:
+Document Type:
 
 - To have legal-i classify the type, *do not send this property* or send an *empty string* as the value.
 - If you know the exact document type, pass it, e.g., `type_medical_report`.
